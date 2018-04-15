@@ -182,7 +182,7 @@ getX <- function(fullmf, fixedmf, contrasts) {
 
 getZt <- function(retrms) {
     ZtList <- lapply(retrms, '[[', "Zt")
-    Zt <- do.call(rBind, ZtList)
+    Zt <- do.call(rbind, ZtList)
     Zt@Dimnames <- vector("list", 2)
     Zt
 }
@@ -210,7 +210,7 @@ getREterms <- function(frames, formula) {
         ## per random term model matrix:
         mm <- model.matrix(eval(substitute(~ expr,
                                            list(expr = x[[2]]))), fullmf)
-        Zt = do.call(rBind, lapply(seq_len(ncol(mm)), function(j) {
+        Zt = do.call(rbind, lapply(seq_len(ncol(mm)), function(j) {
             Zti@x <- mm[,j]
             Zti } ))
 ### FIXME: can we drop rows from Zt when g has missing values in terms

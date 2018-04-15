@@ -19,7 +19,7 @@ formatVC <- function(varc, digits = max(3, getOption("digits") - 2))
     reMat[,4] <- format(unlist(reStdDev), digits = digits)
     if(any(reLens > 1)) {
 	maxlen <- max(reLens)
-	corr <- do.call("rBind", lapply(recorr, function(x, maxlen)
+	corr <- do.call("rbind", lapply(recorr, function(x, maxlen)
                                     {
                                         if(is.null(x)) return("")
                                         x <- as(x, "matrix")
