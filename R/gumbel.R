@@ -8,7 +8,7 @@ pgumbel <-
 ### Currently only unit length location and scale are supported.
 {
   if(max)  ## right skew, loglog link
-    .C("pgumbel",
+    .C("pgumbel_C",
        q = as.double(q),
        length(q),
        as.double(location)[1],
@@ -16,7 +16,7 @@ pgumbel <-
        as.integer(lower.tail),
        NAOK = TRUE)$q
   else ## left skew, cloglog link
-    .C("pgumbel2",
+    .C("pgumbel2_C",
        q = as.double(q),
        length(q),
        as.double(location)[1],
@@ -45,7 +45,7 @@ dgumbel <-
 ### PDF for the Gumbel max and mon distributions
 {
   if(max)  ## right skew, loglog link
-    .C("dgumbel",
+    .C("dgumbel_C",
        x = as.double(x),
        length(x),
        as.double(location)[1],
@@ -53,7 +53,7 @@ dgumbel <-
        as.integer(log),
        NAOK = TRUE)$x
   else ## left skew, cloglog link
-    .C("dgumbel2",
+    .C("dgumbel2_C",
        x = as.double(x),
        length(x),
        as.double(location)[1],
@@ -80,12 +80,12 @@ dgumbel2R <- function(x, location = 0, scale = 1, log = FALSE)
 ggumbel <- function(x, max = TRUE) {
 ### gradient of dgumbel(x) wrt. x
   if(max) ## right skew, loglog link
-    .C("ggumbel",
+    .C("ggumbel_C",
        x = as.double(x),
        length(x),
        NAOK = TRUE)$x
   else ## left skew, cloglog link
-    .C("ggumbel2",
+    .C("ggumbel2_C",
        x = as.double(x),
        length(x),
        NAOK = TRUE)$x

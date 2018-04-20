@@ -5,7 +5,7 @@
 ## used as a flexible link function in clm2() and clmm2().
 
 plgamma <- function(q, lambda, lower.tail = TRUE)
-    .C("plgamma",
+    .C("plgamma_C",
        q = as.double(q),
        length(q),
        as.double(lambda[1]),
@@ -27,7 +27,7 @@ plgammaR <- function(eta, lambda, lower.tail = TRUE) {
 dlgamma <- function(x, lambda, log = FALSE) {
   stopifnot(length(lambda) == 1 &&
             length(log) == 1)
-  .C("dlgamma",
+  .C("dlgamma_C",
      x = as.double(x),
      length(x),
      as.double(lambda),
@@ -46,7 +46,7 @@ dlgammaR <- function(x, lambda, log = FALSE) {
 
 glgamma <- function(x, lambda) {
   stopifnot(length(lambda) == 1)
-  .C("glgamma",
+  .C("glgamma_C",
      x = as.double(x),
      length(x),
      as.double(lambda[1]),

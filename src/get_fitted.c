@@ -19,7 +19,7 @@ SEXP get_fitted(SEXP eta1p, SEXP eta2p, SEXP linkp, SEXP lambdap) {
      return: vector of fittec values of same length as eta1 and eta2. 
     */
   SEXP ans = PROTECT(duplicate(coerceVector(eta1p, REALSXP)));
-  eta2p = coerceVector(eta2p, REALSXP);
+  eta2p = PROTECT(coerceVector(eta2p, REALSXP));
   linkp = coerceVector(linkp, STRSXP);
   const char *linkc = CHAR(asChar(linkp));
   double *eta1 = REAL(ans), *eta2 = REAL(eta2p), 
@@ -27,7 +27,7 @@ SEXP get_fitted(SEXP eta1p, SEXP eta2p, SEXP linkp, SEXP lambdap) {
   int i, nans = LENGTH(ans);
 
   if(LENGTH(eta2p) != nans) {
-    UNPROTECT(1);
+    UNPROTECT(2);
     error("'eta1' and 'eta2' should have the same length");
   }
   
@@ -109,9 +109,9 @@ SEXP get_fitted(SEXP eta1p, SEXP eta2p, SEXP linkp, SEXP lambdap) {
     }
   } 
   else {
-    UNPROTECT(1); // unprotecting before exiting with an error
+    UNPROTECT(2); // unprotecting before exiting with an error
     error("link not recognized");
   }
-  UNPROTECT(1);
+  UNPROTECT(2);
   return ans;
 }

@@ -8,21 +8,21 @@
 
 glogis <- function(x)
 ### gradient of dlogis
-    .C("glogis",
+    .C("glogis_C",
        x = as.double(x),
        length(x),
        NAOK = TRUE)$x
 
 gnorm <- function(x)
 ### gradient of dnorm(x) wrt. x
-    .C("gnorm",
+    .C("gnorm_C",
        x = as.double(x),
        length(x),
        NAOK = TRUE)$x
 
 gcauchy <- function(x)
 ### gradient of dcauchy(x) wrt. x
-    .C("gcauchy",
+    .C("gcauchy_C",
        x = as.double(x),
        length(x),
        NAOK = TRUE)$x

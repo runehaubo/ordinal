@@ -1,4 +1,4 @@
-useDynLib(ordinal, .registration = TRUE)
+useDynLib("ordinal", .registration = TRUE)
 
 importFrom(graphics,
            plot,

@@ -497,7 +497,7 @@ getNGHQinC <- function(rho, par) {
         rho$par <- par
     .negLogLikBase(rho) ## Update lambda, stDev, sigma and eta*Fix
     with(rho, {
-        .C("getNGHQ",
+        .C("getNGHQ_C",
            nll = double(1),
            as.integer(grFac),
            as.double(stDev),
