@@ -13,6 +13,8 @@ warnings_are_errors: true
 # No need for sudo as R is natively supported now.
 sudo: false
 
+r_build_args: --no-build-vignettes
+
 env:
  global:
    - CRAN: http://cran.rstudio.com

@@ -6,3 +6,4 @@
 README.md
 NEWS.html
 .Rhistory
+^\.travis.yml$
