@@ -4,7 +4,6 @@
 
 language: r
 r:
-  - oldrel
   - release
   - devel
 cache: packages
@@ -12,9 +11,11 @@ cache: packages
 warnings_are_errors: true
 # No need for sudo as R is natively supported now.
 sudo: false
+# r_build_args: --no-build-vignettes
+# r_check_args: --as-cran --no-build-vignettes 
 
-r_build_args: --no-build-vignettes
-r_check_args: --as-cran --no-build-vignettes 
+before_install:
+  - tlmgr install chicago
 
 env:
  global:
