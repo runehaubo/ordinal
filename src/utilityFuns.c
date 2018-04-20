@@ -28,7 +28,7 @@ void Trace();
 //------------------------------------------------------------------
 // CDFs:
 
-void pgumbel(double *q, int *nq, double *loc, double *scale,
+void pgumbel_C(double *q, int *nq, double *loc, double *scale,
 	     int *lower_tail)
 {
 // pgumbel()
@@ -38,7 +38,7 @@ void pgumbel(double *q, int *nq, double *loc, double *scale,
 	q[i] = d_pgumbel(q[i], *loc, *scale, *lower_tail);
 }
 
-void pgumbel2(double *q, int *nq, double *loc, double *scale,
+void pgumbel2_C(double *q, int *nq, double *loc, double *scale,
 	      int *lower_tail)
 {
     int i;
@@ -46,14 +46,14 @@ void pgumbel2(double *q, int *nq, double *loc, double *scale,
 	q[i] = 1 - d_pgumbel(-q[i], *loc, *scale, *lower_tail);
 }
 
-void pAO(double *q, int *nq, double *lambda, int *lower_tail)
+void pAO_C(double *q, int *nq, double *lambda, int *lower_tail)
 {
     int i;
     for(i = 0; i < *nq; i++)
 	q[i] = d_pAO(q[i], *lambda, *lower_tail);
 }
 
-void plgamma(double *q, int *nq, double *lambda, int *lower_tail)
+void plgamma_C(double *q, int *nq, double *lambda, int *lower_tail)
 {
     int i;
     for(i = 0; i < *nq; i++)
@@ -63,7 +63,7 @@ void plgamma(double *q, int *nq, double *lambda, int *lower_tail)
 //------------------------------------------------------------------
 // PDFs:
 
-void dgumbel(double *x, int *nx, double *loc, double *scale,
+void dgumbel_C(double *x, int *nx, double *loc, double *scale,
 	     int *give_log)
 {
     int i;
@@ -71,7 +71,7 @@ void dgumbel(double *x, int *nx, double *loc, double *scale,
 	x[i] = d_dgumbel(x[i], *loc, *scale, *give_log);
 }
 
-void dgumbel2(double *x, int *nx, double *loc, double *scale,
+void dgumbel2_C(double *x, int *nx, double *loc, double *scale,
 	     int *give_log)
 {
     int i;
@@ -79,14 +79,14 @@ void dgumbel2(double *x, int *nx, double *loc, double *scale,
 	x[i] = d_dgumbel2(x[i], *loc, *scale, *give_log);
 }
 
-void dAO(double *x, int *nx, double *lambda, int *give_log)
+void dAO_C(double *x, int *nx, double *lambda, int *give_log)
 {
     int i;
     for(i = 0; i < *nx; i++)
 	x[i] = d_dAO(x[i], *lambda, *give_log);
 }
 
-void dlgamma(double *x, int *nx, double *lambda, int *give_log)
+void dlgamma_C(double *x, int *nx, double *lambda, int *give_log)
 {
     int i;
     for(i = 0; i < *nx; i++)
@@ -97,14 +97,14 @@ void dlgamma(double *x, int *nx, double *lambda, int *give_log)
 // gradients of PDFs:
 
 
-void glogis(double *x, int *nx)
+void glogis_C(double *x, int *nx)
 {
     int i;
     for(i = 0; i < *nx; i++)
 	x[i] = d_glogis(x[i]);
 }
 
-void gnorm(double *x, int *nx)
+void gnorm_C(double *x, int *nx)
 {
 // Gradient of dnorm(x) wrt. x
     int i;
@@ -112,7 +112,7 @@ void gnorm(double *x, int *nx)
 	x[i] = d_gnorm(x[i]);
 }
 
-void gcauchy(double *x, int *n)
+void gcauchy_C(double *x, int *n)
 {
 // Gradient of dcauchy(x) wrt. x
     int i;
@@ -120,14 +120,14 @@ void gcauchy(double *x, int *n)
 	x[i] = d_gcauchy(x[i]);
 }
 
-void ggumbel(double *x, int *nx)
+void ggumbel_C(double *x, int *nx)
 {
     int i;
     for(i = 0; i < *nx; i++)
 	x[i] = d_ggumbel(x[i]);
 }
 
-void ggumbel2(double *x, int *nx)
+void ggumbel2_C(double *x, int *nx)
 {
     int i;
     for(i = 0; i < *nx; i++)
@@ -135,14 +135,14 @@ void ggumbel2(double *x, int *nx)
     // or x[i] = d_ggumbel2(x[i]);
 }
 
-void gAO(double *x, int *nx, double *lambda)
+void gAO_C(double *x, int *nx, double *lambda)
 {
     int i;
     for(i = 0; i < *nx; i++)
 	x[i] = d_gAO(x[i], *lambda);
 }
 
-void glgamma(double *x, int *nx, double *lambda)
+void glgamma_C(double *x, int *nx, double *lambda)
 {
     int i;
     for(i = 0; i < *nx; i++)
@@ -324,7 +324,7 @@ void getFitted2(double *eta1, double *eta2, int *neta, double *lambda,
 //------------------------------------------------------------------
 // Gradients and Hessians for update.b in clmm2():
 
-void grFacSum(double *x, int *grFac, int *nx, double *u, int *nu)
+void grFacSum_C(double *x, int *grFac, int *nx, double *u, int *nu)
 // compute tapply(x, grFac, sum) + u
 {
     int i, j;
@@ -340,7 +340,7 @@ void grFacSum(double *x, int *grFac, int *nx, double *u, int *nu)
     }
 }
 
-// FIXME: grFacSum such that it can be used by gradC and hessC - this
+// FIXME: grFacSum_C such that it can be used by gradC and hessC - this
 // should simplify the code
 
 double d_nll(double *u, int nu, int *grFac, double stDev,
@@ -389,7 +389,7 @@ void nll(double *u, int *nu, int *grFac, double *stDev,
 		 eta1Fix, eta2Fix, sigma, pr, weights, *lambda, link);
 }
 
-void grad(double *stDev, double *p1, double *p2, double *pr,
+void grad_C(double *stDev, double *p1, double *p2, double *pr,
 	  double *weights, double *sigma, double *wtprSig,
 	  double *eta1, double *eta2, double *gradValues,
 	  double *u, int *grFac, int *nx, int *ngv,
@@ -554,7 +554,7 @@ void NRalg(int *trace, int *maxIter, double *gradTol,
 	*conv = 0;
 	return ;
     }
-    grad(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
+    grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
 	 gradValues, u, grFac, nx, nu, lambda, link);
     *maxGrad = maxAbs(gradValues, *nu);
     *conv = -1; // Convergence flag
@@ -596,7 +596,7 @@ void NRalg(int *trace, int *maxIter, double *gradTol,
 	    innerIter++;
         }
         *funValue = funValueTry;
-	grad(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
+	grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
 	     gradValues, u, grFac, nx, nu, lambda, link);
 	*maxGrad = maxAbs(gradValues, *nu);
 	if(*trace)
@@ -650,7 +650,7 @@ void NRalgv3(int *trace, int *maxIter, double *gradTol,
 	*conv = 0;
 	return ;
     }
-    grad(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
+    grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
 	 gradValues, u, grFac, nx, nu, lambda, link);
     *maxGrad = maxAbs(gradValues, *nu);
     *conv = -1; // Convergence flag
@@ -695,7 +695,7 @@ void NRalgv3(int *trace, int *maxIter, double *gradTol,
 	    innerIter++;
         }
         *funValue = funValueTry;
-	grad(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
+	grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
 	     gradValues, u, grFac, nx, nu, lambda, link);
 	*maxGrad = maxAbs(gradValues, *nu);
 	if(*trace)
@@ -709,7 +709,7 @@ void NRalgv3(int *trace, int *maxIter, double *gradTol,
 
 //------------------------------------------------------------------
 
-void getNGHQ(double *nll, int *grFac, double *stDev,
+void getNGHQ_C(double *nll, int *grFac, double *stDev,
 	     double *eta1Fix, double *eta2Fix, double *o1, double *o2,
 	     double *Sigma, double *weights, int *nx, int *nu,
 	     double *ghqns, /* double *ghqws,*/ double *lghqws,

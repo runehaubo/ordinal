@@ -1383,19 +1383,6 @@ grad.lambda <- function(rho, lambda, link, delta = 1e-6) {
     diff(f) /  diff(ll)
 }
 
-TraceC <- function(iter, stepFactor, val, maxGrad, par, first=FALSE) {
-    .C("trace",
-       as.integer(iter[1]),
-       as.double(stepFactor[1]),
-       as.double(val[1]),
-       as.double(maxGrad[1]),
-       as.double(par),
-       length(par),
-       as.integer(first[1]))
-
-    return(invisible())
-}
-
 TraceR <- function(iter, stepFactor, val, maxGrad, par, first=FALSE) {
     t1 <- sprintf(" %3d:     %.2e:   %.3f:   %1.3e:  ",
                   iter, stepFactor, val, maxGrad)

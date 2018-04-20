@@ -78,7 +78,7 @@
 
 .gradC <- function(rho) {
     tmp <- with(rho, {
-        .C("grad",
+        .C("grad_C",
            as.double(stDev),
            p1 = double(length(pr)),
            p2 = double(length(pr)),
@@ -336,7 +336,7 @@ update.u2 <- function(rho)
 }
 
 grFacSumC <- function(x, grFac, u)
-    .C("grFacSum",
+    .C("grFacSum_C",
        as.double(x),
        as.integer(grFac),
        as.integer(length(x)),

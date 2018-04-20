@@ -11,7 +11,7 @@ pAOR <- function(q, lambda, lower.tail = TRUE) {
 }
 
 pAO <- function(q, lambda, lower.tail = TRUE)
-    .C("pAO",
+    .C("pAO_C",
        q = as.double(q),
        length(q),
        as.double(lambda[1]),
@@ -32,7 +32,7 @@ dAOR <- function(eta, lambda, log = FALSE) {
 dAO <- function(eta, lambda, log = FALSE) {
   stopifnot(length(lambda) == 1 &&
             length(log) == 1)
-  .C("dAO",
+  .C("dAO_C",
      eta = as.double(eta),
      length(eta),
      as.double(lambda),
@@ -48,7 +48,7 @@ gAOR <- function(eta, lambda) {
 
 gAO <- function(eta, lambda) {
   stopifnot(length(lambda) == 1)
-  .C("gAO",
+  .C("gAO_C",
      eta = as.double(eta),
      length(eta),
      as.double(lambda[1]),
