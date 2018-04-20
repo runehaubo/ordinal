@@ -20,14 +20,15 @@ SEXP get_fitted(SEXP eta1p, SEXP eta2p, SEXP linkp, SEXP lambdap) {
     */
   SEXP ans = PROTECT(duplicate(coerceVector(eta1p, REALSXP)));
   eta2p = PROTECT(coerceVector(eta2p, REALSXP));
-  linkp = coerceVector(linkp, STRSXP);
+  linkp = PROTECT(coerceVector(linkp, STRSXP));
   const char *linkc = CHAR(asChar(linkp));
   double *eta1 = REAL(ans), *eta2 = REAL(eta2p), 
     lambda = asReal(lambdap);
   int i, nans = LENGTH(ans);
 
   if(LENGTH(eta2p) != nans) {
-    UNPROTECT(2);
+    // ".. don't have to UNPROTECT before calling into "error"; it is not a bug to do so, but it is not needed either, error will result in a long jump that will UNPROTECT automatically." Email from Tomas Kalibra 19Apr2018. ;
+    UNPROTECT(3);
     error("'eta1' and 'eta2' should have the same length");
   }
   
@@ -109,9 +110,10 @@ SEXP get_fitted(SEXP eta1p, SEXP eta2p, SEXP linkp, SEXP lambdap) {
     }
   } 
   else {
-    UNPROTECT(2); // unprotecting before exiting with an error
+    // ".. don't have to UNPROTECT before calling into "error"; it is not a bug to do so, but it is not needed either, error will result in a long jump that will UNPROTECT automatically." Email from Tomas Kalibra 19Apr2018. ;
+    UNPROTECT(3); // unprotecting before exiting with an error
     error("link not recognized");
   }
-  UNPROTECT(2);
+  UNPROTECT(3);
   return ans;
 }
