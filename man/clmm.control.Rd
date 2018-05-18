@@ -10,7 +10,8 @@
 \usage{
 clmm.control(method = c("nlminb", "ucminf", "model.frame"), ..., trace = 0,
 maxIter = 50, gradTol = 1e-4, maxLineIter = 50,  useMatrix = FALSE,
-innerCtrl = c("warnOnly", "noWarn", "giveError"))
+innerCtrl = c("warnOnly", "noWarn", "giveError"),
+checkRanef = c("warn", "error", "message"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -43,6 +44,9 @@ innerCtrl = c("warnOnly", "noWarn", "giveError"))
   }
   \item{innerCtrl}{the use of warnings/errors if the inner optimization
     fails to converge.
+  }
+  \item{checkRanef}{the use of message/warning/error if there are more random 
+  effects than observations.
   }
 }
 \value{

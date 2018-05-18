@@ -41,6 +41,9 @@ clmm <-
                offset=off, tJac=ths$tJac) })
   ## compute grouping factor list, and Zt and ST matrices:
   retrms <- getREterms(frames = frames, formulae$formula)
+  ## For each r.e. term, test if Z has more columns than rows to detect
+  ## unidentifiability:
+  test_no_ranef(Zt_list=retrms$retrms, frames=frames, checkRanef=control$checkRanef)
 ### FIXME: save (the evaluated) formula in frames, so we only need the
 ### frames argument to getREterms() ?
   use.ssr <- (retrms$ssr && !control$useMatrix)
@@ -107,7 +110,7 @@ clmm <-
   if(model) res$model <- frames$mf
 
   return(res)
-}
+  }
 
 clmm.formulae <- function(formula) {
     ## Evaluate the formula in the enviroment in which clmm was called
@@ -220,31 +223,7 @@ getREterms <- function(frames, formula) {
         list(f = ff, Zt = Zt, ST = ST)
 ### FIXME: return the i'th element of Lambda here.
     })
-    ## For each r.e. term, test if Z has more columns than rows to detect
-    ## unidentifiability:
-    for(i in seq_along(barlist)) {
-        Zti <- rel[[i]][["Zt"]]
-        if(nrow(Zti) > ncol(Zti) ||
-           (all(frames$wts == 1) && nrow(Zti) == ncol(Zti)))
-            stop(gettextf("no. random effects (=%d) >= no. observations (=%d) for term: (%s)",
-                          nrow(Zti), ncol(Zti), term.names[i]), call.=FALSE)
-    }
-    ## Test if total no. random effects >= total nobs:
     q <- sum(sapply(rel, function(x) nrow(x$Zt)))
-    if(all(frames$wts == 1) && q >= nrow(fullmf))
-        stop(gettextf("no. random effects (=%d) >= no. observations (=%d)",
-                      q, nrow(fullmf)), call.=FALSE)
-### NOTE: q > nrow(fullmf) is (sometimes) allowed if some frames$wts > 1
-###
-### NOTE: if all(frames$wts == 1) we cannot have observation-level
-### random effects so we error if nrow(Zti) >= ncol(Zti)
-###
-### FIXME: Could probably also throw an error if q >= sum(frames$wts),
-### but I am not sure about that.
-###
-### FIXME: It would be better to test the rank of the Zt matrix, but
-### also computationally more intensive.
-###
 ### FIXME: If the model is nested (all gr.factors are nested), then
 ### order the columns of Zt, such that they come in blocks
 ### corresponding to the levels of the coarsest grouping factor. Each
@@ -260,7 +239,7 @@ getREterms <- function(frames, formula) {
     nlev <- nlev[rev(order(nlev))]
     ## separate r.e. terms from the factor list:
     retrms <- lapply(rel, "[", -1)
-    names(retrms) <- NULL
+    names(retrms) <- term.names
     ## list of grouping factors:
     gfl <- lapply(rel, "[[", "f")
     ## which r.e. terms are associated with which grouping factors:
@@ -294,6 +273,42 @@ getREterms <- function(frames, formula) {
                  )
     ## c(retrms=retrms, list(gfList = gfl, dims = dims, ssr = ssr))
     list(retrms=retrms, gfList = gfl, dims = dims, ssr = ssr)
+}
+
+test_no_ranef <- 
+  function(Zt_list, frames, checkRanef=c("warn", "error", "message")) {
+    ## For each r.e. term, test if Z has more columns than rows to detect
+    ## unidentifiability:
+    checkfun <- switch(checkRanef,
+                       "warn" = function(...) warning(..., call.=FALSE),
+                       "error" = function(...) stop(..., call.=FALSE),
+                       "message" = message)
+    nrow_fullmf <- with(frames, nrow(mf[wts > 0, ]))
+    REterm.names <- names(Zt_list)
+    for(i in seq_along(Zt_list)) {
+      Zti <- Zt_list[[i]][["Zt"]]
+      if(nrow(Zti) > ncol(Zti) ||
+         (all(frames$wts == 1) && nrow(Zti) == ncol(Zti)))
+        checkfun(gettextf("no. random effects (=%d) >= no. observations (=%d) for term: (%s)",
+                          nrow(Zti), ncol(Zti), REterm.names[i]))
+    }
+    ## Test if total no. random effects >= total nobs:
+    q <- sum(sapply(Zt_list, function(x) nrow(x$Zt)))
+    if(all(frames$wts == 1) && q >= nrow_fullmf)
+      checkfun(gettextf("no. random effects (=%d) >= no. observations (=%d)",
+                        q, nrow_fullmf))
+    invisible(NULL)
+    ### NOTE: q > nrow(fullmf) is (sometimes) allowed if some frames$wts > 1
+    ###
+    ### NOTE: if all(frames$wts == 1) we cannot have observation-level
+    ### random effects so we error if nrow(Zti) >= ncol(Zti)
+    ###
+    ### FIXME: Could probably also throw an error if q >= sum(frames$wts),
+    ### but I am not sure about that.
+    ###
+    ### FIXME: It would be better to test the rank of the Zt matrix, but
+    ### also computationally more intensive.
+    ###
 }
 
 fe.start <- function(frames, link, threshold) {

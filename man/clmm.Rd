@@ -93,9 +93,14 @@ threshold = c("flexible", "symmetric", "symmetric2", "equidistant"), ...)
     (cut-points). \code{"flexible"} provides the standard unstructured
     thresholds, \code{"symmetric"} restricts the distance between the
     thresholds to be symmetric around the central one or two thresholds
-    for odd or equal numbers or thresholds respectively, and
+    for odd or equal numbers or thresholds respectively,
+    \code{"symmetric2"} restricts the latent
+    mean in the reference group to zero; this means that the central
+    threshold (even no. response levels) is zero or that the two central
+    thresholds are equal apart from their sign (uneven no. response
+    levels), and
     \code{"equidistant"} restricts the distance between consecutive
-    thresholds to the same value.
+    thresholds to be of the same size.
   }
   \item{\dots}{
     additional arguments are passed on to \code{\link{clm.control}}.
@@ -156,12 +161,12 @@ threshold = c("flexible", "symmetric", "symmetric2", "equidistant"), ...)
 }
 \examples{
 
-## Cumulative link model with one random term:
-fmm1 <- clmm(rating ~ temp + contact + (1|judge), data = wine)
-summary(fmm1)
-
-\dontrun{ 
-## May take a couple of seconds to run this.
+## Cumulative link model with one random term:	
+fmm1 <- clmm(rating ~ temp + contact + (1|judge), data = wine)	
+summary(fmm1)	
+	
+\dontrun{ 	
+## May take a couple of seconds to run this.	
 
 ## Cumulative link mixed model with two random terms:
 mm1 <- clmm(SURENESS ~ PROD + (1|RESP) + (1|RESP:PROD), data = soup,

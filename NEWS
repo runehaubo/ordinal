@@ -238,3 +238,20 @@ March 04 2010:
 
 2015-01-21:
 - Updating Citation information per CRAN request.
+
+2015-06-28:
+- Updating maintainer email address
+
+2016-12-12:
+- Fixing a couple of errors in CLM tutorial vignette
+- Correcting description of threshold argument to clmm
+- qgumbel did not respect it's lower.tail argument (thanks to John Fox for 
+  reporting)
+- Test for no. random effects less than the no. observations now gives a warning
+  instead of an error and is now manageable via clmm.control.
+  
+2018-04-19:
+- Fixed insufficient protect in get_fitted
+- Registration of native routines (C-code)
+- Reduce exec time for clmm examples
+- change rBind -> rbind

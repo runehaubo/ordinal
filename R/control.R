@@ -34,10 +34,12 @@ clmm.control <-
   function(method = c("nlminb", "ucminf", "model.frame"),
            ..., trace = 0, maxIter = 50, gradTol = 1e-4,
            maxLineIter = 50, useMatrix = FALSE,
-           innerCtrl = c("warnOnly", "noWarn", "giveError"))
+           innerCtrl = c("warnOnly", "noWarn", "giveError"),
+           checkRanef = c("warn", "error", "message"))
 {
   method <- match.arg(method)
   innerCtrl <- match.arg(innerCtrl)
+  checkRanef <- match.arg(checkRanef)
   useMatrix <- as.logical(useMatrix)
   stopifnot(is.logical(useMatrix))
   ctrl <- list(trace=if(trace < 0) 1 else 0,
@@ -56,7 +58,6 @@ clmm.control <-
   if(method == "ucminf" && !"grad" %in% names(optCtrl))
     optCtrl$grad <- "central"
 
-  list(method = method, useMatrix = useMatrix, ctrl = ctrl,
-       optCtrl = optCtrl)
+  namedList(method, useMatrix, ctrl, optCtrl, checkRanef)
 }
 
