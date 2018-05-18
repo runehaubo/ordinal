@@ -358,7 +358,7 @@ allow the threshold parameters to depend on \texttt{contact}:
   \end{array}
 \end{equation}
 This means that the thresholds
-$\{\Theta_{ij} = \theta_j + \theta_{2j} (\mathtt{contact}_i)\}$
+$\{\theta_{ij} = \theta_j + \theta_{2j} (\mathtt{contact}_i)\}$
 have the form of linear regression in which
 $\theta_j$ are the intercepts and $\theta_{j2}$ are effects that depend
 on contact. This model is specified as follows with \texttt{clm}:
