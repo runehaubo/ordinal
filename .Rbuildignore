@@ -7,3 +7,6 @@ README.md
 NEWS.html
 .Rhistory
 ^\.travis.yml$
+\.o$
+\.so$
+\.dll$
