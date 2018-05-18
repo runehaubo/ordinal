@@ -161,13 +161,13 @@ threshold = c("flexible", "symmetric", "symmetric2", "equidistant"), ...)
 }
 \examples{
 
--## Cumulative link model with one random term:	
--fmm1 <- clmm(rating ~ temp + contact + (1|judge), data = wine)	
--summary(fmm1)	
--	
--\dontrun{ 	
--## May take a couple of seconds to run this.	
--
+## Cumulative link model with one random term:	
+fmm1 <- clmm(rating ~ temp + contact + (1|judge), data = wine)	
+summary(fmm1)	
+	
+\dontrun{ 	
+## May take a couple of seconds to run this.	
+
 ## Cumulative link mixed model with two random terms:
 mm1 <- clmm(SURENESS ~ PROD + (1|RESP) + (1|RESP:PROD), data = soup,
             link = "probit", threshold = "equidistant")
