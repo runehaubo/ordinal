@@ -109,7 +109,8 @@ dgumbel(x)
 ggumbel(x)
 
 (ppp <- pgumbel(x, max=FALSE))
-## Observe lack of precision:
+## Observe that probabilities close to 0 are more accurately determined than 
+## probabilities close to 1:
 qgumbel(ppp, max=FALSE)
 dgumbel(x, max=FALSE)
 ggumbel(x, max=FALSE)

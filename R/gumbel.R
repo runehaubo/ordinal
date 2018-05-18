@@ -110,9 +110,8 @@ rgumbel <- function(n, location = 0, scale = 1, max = TRUE) {
     location + scale * log(-log(runif(n)))
 }
 
-qgumbel <-
-  function(p, location = 0, scale = 1, lower.tail = TRUE, max = TRUE)
-{
+qgumbel <- function(p, location = 0, scale = 1, lower.tail = TRUE, max = TRUE) {
+  if(!lower.tail) p <- 1 - p
   if(max)  ## right skew, loglog link
     location - scale * log(-log(p))
   else ## left skew, cloglog link

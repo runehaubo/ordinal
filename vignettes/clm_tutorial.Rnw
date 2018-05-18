@@ -103,6 +103,7 @@
 }
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 \bibliographystyle{chicago}
 \maketitle
 
@@ -218,7 +219,7 @@ data:
 This is a model for the cumulative probability of the $i$th rating
 falling in the $j$th category or below, where $i$ index
 all observations ($n=72$) and $j = 1, \ldots, J$ index the response
-categories ($J = 5$). The $theta_j$ parameter is the intercept
+categories ($J = 5$). The $\theta_j$ parameter is the intercept
 for the $j$th cumulative logit $\textup{logit}(P(Y_i \leq j))$; they
 are known as threshold parameters, intercepts or cut-points.
 
@@ -341,18 +342,26 @@ which we will now discuss in turn.
 The CLM in \eqref{eq:CLM} specifies a structure in which the
 regression parameters, $\bm\beta$ are not allowed to vary with $j$.
 Nominal effects relax this assumption by allowing one or more
-regression parameters to vary with $j$. In the following model we
-allow the regression parameter for \texttt{contact} to vary with $j$:
+regression parameters to vary with $j$.
+An equivalent interpretation is that the threshold parameters $\{\theta_j\}$ are
+allowed to depend on regression variables -- the ordinal package takes this
+approach in the implementation.
+In the following model we
+allow the threshold parameters to depend on \texttt{contact}:
 \begin{equation}
   \label{eq:CLM_nominal}
   \begin{array}{c}
-    \textup{logit}(P(Y_i \leq j)) = \theta_j - \beta_1 (\mathtt{temp}_i)
-    - \beta_{2j} (\mathtt{contact}_i) \\
+    \textup{logit}(P(Y_i \leq j)) =
+    \theta_j + \theta_{2j} (\mathtt{contact}_i) - \beta (\mathtt{temp}_i)
+    \\
     i = 1,\ldots, n, \quad j = 1, \ldots, J-1
   \end{array}
 \end{equation}
-This means that there is one estimate of $\beta_2$ for each $j$.
-This model is specified as follows with \texttt{clm}:
+This means that the thresholds
+$\{\Theta_{ij} = \theta_j + \theta_{2j} (\mathtt{contact}_i)\}$
+have the form of linear regression in which
+$\theta_j$ are the intercepts and $\theta_{j2}$ are effects that depend
+on contact. This model is specified as follows with \texttt{clm}:
 <<>>=
 fm.nom <- clm(rating ~ temp, nominal=~contact, data=wine)
 summary(fm.nom)
@@ -371,9 +380,16 @@ levels of contact. This interpretation corresponds to the default
 treatment contrasts; if other types of contrasts are specified, the
 interpretation is a little different. As can be seen from the output,
 the effect of \texttt{contact} is almost constant across thresholds
-and around $1.5$ corresponding to the estimate from \texttt{fm1} on
-page \pageref{eq:parameters}, so probably there is not much evidence
-that the effect of \texttt{contact} varies with $j$
+and around $-1.5$ corresponding to the estimate from \texttt{fm1} on
+page \pageref{eq:parameters} (except for the change of sign),
+so probably there is not much evidence
+that the effect of \texttt{contact} varies with $j$.
+
+The resulting thresholds for each level of \texttt{contact} can be extracted
+with:
+<<>>=
+fm.nom$Theta
+@
 
 We can perform a likelihood ratio test of the equal slopes or
 proportional odds assumption for \texttt{contact} by comparing the
@@ -577,10 +593,10 @@ If we attempt to test the proportional odds assumption for
 fm.nom2 <- clm(rating ~ contact, nominal=~temp, data=wine)
 summary(fm.nom2)
 @
-Several of the threshold coefficients are extremely large with huge
+Several of the threshold coefficients are extremely large with undefined
 standard errors. Also the condition number of the Hessian is very
-large and a larger number of iterations was used all indicating that
-something is not well-behaved. The problem is that the the ML estimates of
+large and a large number of iterations was used all indicating that
+something is not well-behaved. The problem is that the the ML values of
 some of the threshold parameters are at (plus/minus)
 infinity. \texttt{clm} is not able to detect this and just stops
 iterating when the likelihood function is flat enough for the
@@ -588,7 +604,7 @@ termination criterion to be satisfied, i.e., when the maximum absolute
 gradient is small enough.
 
 Even though some parameter estimates are not at (plus/minus) infinity
-while they should have been, the remaining parameters are accurately
+while their true (underlying) value are, the remaining parameters are
 determined and the value of the log-likelihood is also accurately
 determined. This means that likelihood ratio tests are still
 available, for example, it is still possible to test the proportional
