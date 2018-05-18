@@ -10,8 +10,6 @@ fmm1 <- clmm(rating ~ temp + (1|judge), data=wine)
 anova(fm1, fmm1)
 anova(fmm1, fm1)
 
-anova(fm1, fmm1)
-
 ## Testing if 'test' and 'type' arguments are ignored properly: 
 fm1 <- clm(rating ~ temp + contact, data=wine)
 fm2 <- clm(rating ~ temp, data=wine)

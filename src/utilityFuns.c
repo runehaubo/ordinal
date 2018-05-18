@@ -608,103 +608,103 @@ void NRalg(int *trace, int *maxIter, double *gradTol,
 }
 
 void NRalgv3(int *trace, int *maxIter, double *gradTol,
-	     int *maxLineIter, int *grFac,
-	     double *stDev, double *o1, double *o2,
-	     double *eta1Fix, double *eta2Fix, double *sigma,
-	     int *link, double *weights, double *u,
-	     double *pr, double *funValue,
-	     double *gradValues, double *hessValues,
-	     int *nx, int *nu, double *maxGrad, int *conv,
-	     double *lambda, int *Niter)
-// Less input and slightly faster than NRalg().
+             int *maxLineIter, int *grFac,
+             double *stDev, double *o1, double *o2,
+             double *eta1Fix, double *eta2Fix, double *sigma,
+             int *link, double *weights, double *u,
+             double *pr, double *funValue,
+             double *gradValues, double *hessValues,
+             int *nx, int *nu, double *maxGrad, int *conv,
+             double *lambda, int *Niter)
+  // Less input and slightly faster than NRalg().
 {
-/*
-  control arguments from clmm - see ?clmm.control:
-  trace, maxIter, gradTol, maxLineIter all of length 1
-
-  length = nx: grFac, o1, o2, eta1Fix, eta2Fix, sigma, weights
-  length = 1: stDev, funValue, nx, nu, maxGrad, conv, lambda, Niter
-  length = nu: gradValues, hessValues, u
-
-  updates: u, funValue, gradValues, hessValues, maxGrad, conv, Niter,
-  pr,
-
-  correct vector input:
-  eta1, eta2, pr, u = 0, grFac, o1, o2, eta1Fix, eta2Fix, sigma,
-  weights
-
-  arbitrary input:
-  gradValues, hessValues,
-
-  needed output:
-  u, funValue, gradValues, hessValues, conv, Niter,
-*/
-    int lineIter, innerIter = 0, i, j;
-    double stepFactor = 1, funValueTry, step[*nu];
-    double eta1[*nx], eta2[*nx], p1[*nx], p2[*nx], wtprSig[*nx];
-
-    *funValue = d_nll(u, *nu, grFac, *stDev, o1, o2, *nx, eta1, eta2,
-		      eta1Fix, eta2Fix, sigma, pr, weights,
-		      *lambda, link);
-    if(!R_FINITE(*funValue)) {
-	*conv = 0;
-	return ;
+  /*
+   control arguments from clmm - see ?clmm.control:
+   trace, maxIter, gradTol, maxLineIter all of length 1
+   
+   length = nx: grFac, o1, o2, eta1Fix, eta2Fix, sigma, weights
+   length = 1: stDev, funValue, nx, nu, maxGrad, conv, lambda, Niter
+   length = nu: gradValues, hessValues, u
+   
+   updates: u, funValue, gradValues, hessValues, maxGrad, conv, Niter,
+   pr,
+   
+   correct vector input:
+   eta1, eta2, pr, u = 0, grFac, o1, o2, eta1Fix, eta2Fix, sigma,
+   weights
+   
+   arbitrary input:
+   gradValues, hessValues,
+   
+   needed output:
+   u, funValue, gradValues, hessValues, conv, Niter,
+   */
+  int lineIter, innerIter = 0, i, j;
+  double stepFactor = 1, funValueTry, step[*nu];
+  double eta1[*nx], eta2[*nx], p1[*nx], p2[*nx], wtprSig[*nx];
+  
+  *funValue = d_nll(u, *nu, grFac, *stDev, o1, o2, *nx, eta1, eta2,
+                    eta1Fix, eta2Fix, sigma, pr, weights,
+                    *lambda, link);
+  if(!R_FINITE(*funValue)) {
+    *conv = 0;
+    return ;
+  }
+  grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
+         gradValues, u, grFac, nx, nu, lambda, link);
+  *maxGrad = maxAbs(gradValues, *nu);
+  *conv = -1; // Convergence flag
+  if(*trace)
+    Trace(0, stepFactor, *funValue, *maxGrad, u, *nu, 1);
+  
+  // Newton-Raphson algorithm:
+  for(i = 0; i < *maxIter; i++) {
+    if(*maxGrad < *gradTol) {
+      *conv = 1;
+      return ;
     }
+    hess(stDev, p1, p2, pr, wtprSig, eta1, eta2, link, grFac, nx,
+         hessValues, lambda, nu);
+    for(j = 0; j < *nu; j++) {
+      /* Actually there is no need to store 'step' since
+       'gradValues' could hold the step values (maintained
+       here for code clarity) */
+      step[j] = gradValues[j] / hessValues[j];
+      u[j] -= stepFactor * step[j];
+    }
+    funValueTry = d_nll(u, *nu, grFac, *stDev, o1, o2, *nx, eta1,
+                        eta2, eta1Fix, eta2Fix, sigma, pr,
+                        weights, *lambda, link);
+    lineIter = 0;
+    //  simple line search, i.e. step halfing:
+    while(funValueTry > *funValue) {
+      stepFactor *= 0.5;
+      for(j = 0; j < *nu; j++)
+        u[j] += stepFactor * step[j];
+      funValueTry = d_nll(u, *nu, grFac, *stDev, o1, o2, *nx, eta1,
+                          eta2, eta1Fix, eta2Fix, sigma, pr,
+                          weights, *lambda, link);
+      lineIter++;
+      if(*trace)
+        Trace(i+1+innerIter, stepFactor, *funValue, *maxGrad,
+              u, *nu, 0);
+      if(lineIter > *maxLineIter){
+        *conv = -2;
+        return ;
+      }
+      innerIter++;
+    }
+    *funValue = funValueTry;
     grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
-	 gradValues, u, grFac, nx, nu, lambda, link);
+           gradValues, u, grFac, nx, nu, lambda, link);
     *maxGrad = maxAbs(gradValues, *nu);
-    *conv = -1; // Convergence flag
     if(*trace)
-	Trace(0, stepFactor, *funValue, *maxGrad, u, *nu, 1);
-
-    // Newton-Raphson algorithm:
-    for(i = 0; i < *maxIter; i++) {
-        if(*maxGrad < *gradTol) {
-            *conv = 1;
-            return ;
-	}
-	hess(stDev, p1, p2, pr, wtprSig, eta1, eta2, link, grFac, nx,
-	     hessValues, lambda, nu);
-	for(j = 0; j < *nu; j++) {
-	    /* Actually there is no need to store 'step' since
-	       'gradValues' could hold the step values (maintained
-	       here for code clarity) */
-	    step[j] = gradValues[j] / hessValues[j];
-	    u[j] -= stepFactor * step[j];
-	}
-	funValueTry = d_nll(u, *nu, grFac, *stDev, o1, o2, *nx, eta1,
-			    eta2, eta1Fix, eta2Fix, sigma, pr,
-			    weights, *lambda, link);
-	lineIter = 0;
-	//  simple line search, i.e. step halfing:
-	while(funValueTry > *funValue) {
-	    stepFactor *= 0.5;
-	    for(j = 0; j < *nu; j++)
-		u[j] += stepFactor * step[j];
-	    funValueTry = d_nll(u, *nu, grFac, *stDev, o1, o2, *nx, eta1,
-				eta2, eta1Fix, eta2Fix, sigma, pr,
-				weights, *lambda, link);
-	    lineIter++;
-	    if(*trace)
-		Trace(i+1+innerIter, stepFactor, *funValue, *maxGrad,
-		      u, *nu, 0);
-	    if(lineIter > *maxLineIter){
-		*conv = -2;
-		return ;
-	    }
-	    innerIter++;
-        }
-        *funValue = funValueTry;
-	grad_C(stDev, p1, p2, pr, weights, sigma, wtprSig, eta1, eta2,
-	     gradValues, u, grFac, nx, nu, lambda, link);
-	*maxGrad = maxAbs(gradValues, *nu);
-	if(*trace)
-	    Trace(i+1+innerIter, stepFactor, *funValue, *maxGrad, u,
-		  *nu, 0);
-	stepFactor = fmin2(1.0, stepFactor * 2.0);
-	(*Niter)++;
-    }
-    (*Niter)--;
+      Trace(i+1+innerIter, stepFactor, *funValue, *maxGrad, u,
+            *nu, 0);
+    stepFactor = fmin2(1.0, stepFactor * 2.0);
+    (*Niter)++;
+  }
+  (*Niter)--;
 }
 
 //------------------------------------------------------------------
