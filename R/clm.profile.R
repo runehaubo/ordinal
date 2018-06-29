@@ -90,6 +90,7 @@ profile.clm.beta <-
     ## X <- with(mf, X[wts > 0, , drop=FALSE]) ## containing alias cols
     wts <- getWeights(model.frame(fitted))
     X <- model.matrix(fitted)$X[wts > 0, , drop=FALSE]
+    if(fitted$control$sign.location == "positive") X <- -X
     rho <- get_clmRho(fitted)
     ## rho <- update(fitted, doFit = FALSE)
     orig <- as.list(rho)[c("B1", "B2", "o1", "o2")]

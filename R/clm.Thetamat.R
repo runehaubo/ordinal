@@ -3,7 +3,7 @@
 ## coefficients from model fits (clm()s) with nominal effects.
 
 getThetamat <-
-  function(terms, alpha, assign, contrasts, tJac, xlevels)
+  function(terms, alpha, assign, contrasts, tJac, xlevels, sign.nominal)
 ### Compute matrix of thresholds for all combinations of levels of
 ### factors in the nominal formula.
 ###
@@ -15,6 +15,7 @@ getThetamat <-
 ### contrasts: list of contrasts for the nominal effects
 ### tJac: threshold Jacobian with appropriate dimnames.
 ### xlevels: names of levels of factors among the nominal effects.
+### sign.nominal: "positive" or "negative"
 ###
 ### Output:
 ### Theta: data.frame of thresholds
@@ -69,6 +70,7 @@ getThetamat <-
 ### fail:
         if(!"(Intercept)" %in% colnames(X))
             X <- cbind("(Intercept)" = rep(1, nrow(X)), X)
+        if(sign.nominal == "negative") X[, -1] <- -X[, -1]
 ### NOTE: There are no contrasts for numerical variables, but there
 ### may be for ordered factors.
         ## From threshold parameters to thresholds:

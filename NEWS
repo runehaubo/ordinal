@@ -255,3 +255,7 @@ March 04 2010:
 - Registration of native routines (C-code)
 - Reduce exec time for clmm examples
 - change rBind -> rbind
+
+2018-04-19.9002:
+- Added sign.location and sign.nominal to clm.control()
+

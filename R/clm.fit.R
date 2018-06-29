@@ -92,7 +92,7 @@ clm.fit.default <- function(y, ...)
     ## fitted.values, df.residual:
     fit <- clm.finalize(fit, y$weights, y$coef.names, y$aliased)
     fit$tJac <- format_tJac(y$tJac, y$y.levels, y$alpha.names)
-    th.res <- formatTheta(fit$alpha, fit$tJac, y)
+    th.res <- formatTheta(fit$alpha, fit$tJac, y, y$control$sign.nominal)
     ## Check convergence:
     conv <- conv.check(fit, control=y$control, Theta.ok=th.res$Theta.ok,
                        tol=y$control$tol)

@@ -66,6 +66,7 @@ predict.clm <-
         Xint <- match("(Intercept)", colnames(X), nomatch = 0L)
         n <- nrow(X)
         if(Xint <= 0) X <- cbind("(Intercept)" = rep(1, n), X)
+        # if(object$control$sign.location == "negative") NOM[, -1] <- -NOM[, -1]
         ## drop aliased columns:
         if(sum(object$aliased$beta) > 0)
             X <- X[, !c(FALSE, object$aliased$beta), drop=FALSE]
@@ -95,6 +96,7 @@ predict.clm <-
                                 contrasts=object$nom.contrasts)
             NOMint <- match("(Intercept)", colnames(NOM), nomatch = 0L)
             if(NOMint <= 0) NOM <- cbind("(Intercept)" = rep(1, n), NOM)
+            # if(object$control$sign.nominal == "negative") NOM[, -1] <- -NOM[, -1]
             alias <- t(matrix(object$aliased$alpha,
                               nrow=length(object$y.levels) - 1))[,1]
             if(sum(alias) > 0)
@@ -130,7 +132,7 @@ predict.clm <-
                           S=if(is.scale) S else NULL,
                           weights=rep(1, n), offset=offset,
                           S.offset=if(is.scale) Soff else rep(0, n),
-                          tJac=tJac)
+                          tJac=tJac, control=object$control)
         setLinks(env, link=object$link)
     } ## end !missing(newdata) or type == "class"
     else {

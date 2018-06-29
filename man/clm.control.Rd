@@ -7,7 +7,10 @@
 }
 \usage{
 clm.control(method = c("Newton", "model.frame", "design", "ucminf", "nlminb",
-   "optim"), ..., trace = 0L,
+   "optim"), 
+   sign.location = c("negative", "positive"), 
+   sign.nominal = c("positive", "negative"), 
+   ..., trace = 0L,
    maxIter = 100L, gradTol = 1e-06, maxLineIter = 15L, relTol = 1e-6,
    tol = sqrt(.Machine$double.eps), maxModIter = 5L,
    convergence = c("warn", "silent", "stop", "message"))
@@ -19,6 +22,10 @@ clm.control(method = c("Newton", "model.frame", "design", "ucminf", "nlminb",
     \code{model.frame}, \code{"design"} causes \code{\link{clm}} to
     return a list of design matrices etc. that can be used with
     \code{\link{clm.fit}}.
+  }
+  \item{sign.location}{change sign of the location part of the model.
+  }
+  \item{sign.nominal}{change sign of the nominal part of the model.
   }
   \item{trace}{numerical, if \code{> 0} information is printed about and during
     the optimization process. Defaults to \code{0}.

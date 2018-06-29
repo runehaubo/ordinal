@@ -3,19 +3,26 @@
 
 clm.control <-
   function(method = c("Newton", "model.frame", "design", "ucminf", "nlminb",
-             "optim"), ...,  trace = 0L, maxIter = 100L, gradTol = 1e-6,
+             "optim"), 
+           sign.location = c("negative", "positive"), 
+           sign.nominal = c("positive", "negative"), 
+           ...,  trace = 0L, maxIter = 100L, gradTol = 1e-6,
            maxLineIter = 15L, relTol = 1e-6, tol = sqrt(.Machine$double.eps),
            maxModIter = 5L,
            convergence=c("warn", "silent", "stop", "message"))
 {
   method <- match.arg(method)
   convergence <- match.arg(convergence)
+  sign.location <- match.arg(sign.location)
+  sign.nominal <- match.arg(sign.nominal)
 
   if(!all(is.numeric(c(maxIter, gradTol, maxLineIter, relTol, tol,
                        maxModIter))))
       stop("maxIter, gradTol, relTol, tol, maxModIter and maxLineIter should all be numeric")
 
   ctrl <- list(method = method,
+               sign.location = sign.location,
+               sign.nominal = sign.nominal,
                convergence = convergence,
                trace = as.integer(trace),
                maxIter = as.integer(maxIter),

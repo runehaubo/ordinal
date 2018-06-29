@@ -222,7 +222,7 @@ clm.fit.optim <-
              function(par) clm.nll(rho, par),
              function(par) clm.grad_direct(rho, par),
              method="BFGS",
-             control=control),
+             control=control)
            )
   ## save results:
   rho$par <- optRes[[1]]

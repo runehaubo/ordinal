@@ -406,7 +406,7 @@ extractFromFrames <- function(frames, fullmf) {
     lst
 }
 
-formatTheta <- function(alpha, tJac, x) {
+formatTheta <- function(alpha, tJac, x, sign.nominal) {
     ## x: alpha, tJac, nom.terms, NOM, nom.contrasts, nom.xlevels,
     Theta.ok <- TRUE
     if(is.null(x[["NOM"]])) { ## no nominal effects
@@ -430,7 +430,8 @@ formatTheta <- function(alpha, tJac, x) {
                     assign=attr(x$NOM, "assign"),
                     contrasts=x$nom.contrasts,
                     tJac=tJac,
-                    xlevels=x$nom.xlevels)
+                    xlevels=x$nom.xlevels,
+                    sign.nominal=sign.nominal)
     ## Test that (finite) thresholds are increasing:
     if(all(is.finite(unlist(Theta.list$Theta)))) {
         th.increasing <- apply(Theta.list$Theta, 1, function(th)

@@ -45,7 +45,6 @@ clm <-
     design <- c(design, makeThresholds(design$y.levels, threshold))
     design <- drop.cols(design, silent=TRUE, drop.scale=FALSE)
     clm.struct <- c(design, lst)
-    if(control$method == "struct") return(clm.struct)
     ## Fit model, check convergence, or return a model environment:
     fit <- clm.fit.default(clm.struct)
     if(doFit == FALSE) return(fit)
@@ -67,7 +66,7 @@ clm <-
 
 clm.newRho <-
     function(parent=parent.frame(), y, X, NOM=NULL, S=NULL, weights,
-             offset, S.offset=NULL, tJac, ...)
+             offset, S.offset=NULL, tJac, control=clm.control(), ...)
 ### Setting variables in rho: B1, B2, o1, o2, weights.
 {
     ## Make B1, B2, o1, o2 based on y, X and tJac:
@@ -88,17 +87,19 @@ clm.newRho <-
     B2 <- B2 %*% tJac
     ## update B1 and B2 with nominal effects:
     if(NCOL(NOM) > 1) { ## !is.null(NOM) && ncol(NOM) > 1) {
-        ## if !is.null(NOM) and NOM is more than an intercept:
-        LL1 <- lapply(1:ncol(NOM), function(x) B1 * NOM[keep, x])
-        B1 <- do.call(cbind, LL1)
-        LL2 <- lapply(1:ncol(NOM), function(x) B2 * NOM[keep, x])
-        B2 <- do.call(cbind, LL2)
+      ## if !is.null(NOM) and NOM is more than an intercept:
+      if(control$sign.nominal == "negative") NOM[, -1] <- -NOM[, -1]
+      LL1 <- lapply(1:ncol(NOM), function(x) B1 * NOM[keep, x])
+      B1 <- do.call(cbind, LL1)
+      LL2 <- lapply(1:ncol(NOM), function(x) B2 * NOM[keep, x])
+      B2 <- do.call(cbind, LL2)
     }
     ## update B1 and B2 with location effects (X):
     nbeta <- NCOL(X) - 1
     if(nbeta > 0) {
-        B1 <- cbind(B1, -X[keep, -1, drop = FALSE])
-        B2 <- cbind(B2, -X[keep, -1, drop = FALSE])
+      if(control$sign.location == "negative") X <- -X
+      B1 <- cbind(B1, X[keep, -1, drop = FALSE])
+      B2 <- cbind(B2, X[keep, -1, drop = FALSE])
     }
     dimnames(B1) <- NULL
     dimnames(B2) <- NULL

@@ -207,7 +207,7 @@ get_clmRho <- function(object, ...) {
 
 get_clmRho.default <-
     function(object, terms.list, contrasts, link, threshold,
-             parent=parent.frame(), start=NULL, ...)
+             parent=parent.frame(), start=NULL, control=clm.control(), ...)
 ### .default method(?)
 ### object: model.frame (fullmf) with all variables present
 ### terms.list: list of terms.objects for each of the formulas in the
@@ -225,7 +225,7 @@ get_clmRho.default <-
     rho <- with(design, {
         clm.newRho(parent.frame(), y=y, X=X, NOM=design$NOM, S=design$S,
                    weights=weights, offset=offset, S.offset=design$S.off,
-                   tJac=tJac)
+                   tJac=tJac, control=control)
     })
     ## Set and check starting values for the parameters:
     start <- set.start(rho, start=start, get.start=is.null(start),
@@ -244,7 +244,8 @@ get_clmRho.clm <-
     get_clmRho.default(object=model.frame(o),
                        terms.list=terms(o, "all"),
                        contrasts=o$contrasts, start=c(o$start), link=o$link,
-                       threshold=o$threshold, parent=parent, ...)
+                       threshold=o$threshold, parent=parent, control=o$control, 
+                       ...)
 }
 
 ## get_mfcall <- function(mc, envir=parent.frame(2)) {

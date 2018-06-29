@@ -60,7 +60,7 @@ simple_clm <-
   rho <- clm.newRho(parent.frame(), y=frames$y, X=frames$X,
                     NOM=NULL, S=NULL,
                     weights=wts, offset=off, S.offset=NULL,
-                    tJac=frames$tJac)
+                    tJac=frames$tJac, control=control)
 
   ## Set starting values for the parameters:
   start <- set.start(rho, start=start, get.start=missing(start),
