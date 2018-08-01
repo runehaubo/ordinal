@@ -158,7 +158,7 @@ conv.check <-
     if(tol < 0)
         stop(gettextf("numerical tolerance is %g, expecting non-negative value",
                       tol), call.=FALSE)
-### FIXME: test this.
+### OPTION: test this.
     H <- fit$Hessian
     g <- fit$gradient
     max.grad <- max(abs(g))
@@ -177,7 +177,7 @@ conv.check <-
                "3" = "step factor reduced below minimum",
                "4" = "maximum number of consecutive Newton modifications reached")
     if(control$method != "Newton") mess <- NULL
-### FIXME: get proper convergence message from optim, nlminb, ucminf etc.
+### OPTION: get proper convergence message from optim, nlminb, ucminf etc.
     res <- c(res, alg.message=mess)
     ## }
     evd <- eigen(H, symmetric=TRUE, only.values=TRUE)$values
@@ -256,7 +256,7 @@ conv.check <-
 
 cov.conv <- conv.check
 
-### FIXME: let convergence() print convergence info from clm using
+### OPTION: let convergence() print convergence info from clm using
 ### print.conv.check
 
 print.conv.check <-

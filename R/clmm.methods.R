@@ -226,7 +226,6 @@ extractAIC.clmm <- function(fit, scale = 0, k = 2, ...) {
 
 nobs.clmm <- function(object, ...) object$dims$nobs
 
-### FIXME: define edf method
 edf.clmm <- function(object, ...) object$dims$edf
 
 ## anova.clmm <- function(object, ...)

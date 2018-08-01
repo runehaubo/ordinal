@@ -54,7 +54,7 @@ clm.fit.NR <-
 ### compute step for negative-definite Hessians and we don't want
 ### that.
 
-### FIXME: What if Hessian is closely singular but slightly positive?
+### OPTION: What if Hessian is closely singular but slightly positive?
 ### Could we do something better in that case?
         if(inherits(ch, "try-error")) {
             if(abs.conv) { ## step.ok not true.

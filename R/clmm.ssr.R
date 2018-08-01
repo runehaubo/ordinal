@@ -47,7 +47,7 @@ clmm.fit.ssr <-
     optim.error <- function(fit, method)
         if(inherits(fit, "try-error"))
             stop("optimizer ", method, " terminated with an error", call.=FALSE)
-### FIXME: Could have an argument c(warn, fail, ignore) to optionally
+### OPTION: Could have an argument c(warn, fail, ignore) to optionally
 ### return the fitted model despite the optimizer failing.
 
     method <- match.arg(method)

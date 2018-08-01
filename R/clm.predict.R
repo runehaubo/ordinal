@@ -7,7 +7,7 @@ predict.clm <-
            type = c("prob", "class", "cum.prob", "linear.predictor"),
            na.action = na.pass, ...)
 ### result - a list of predictions (fit)
-### FIXME: restore names of the fitted values
+### OPTION: restore names of the fitted values
 ###
 ### Assumes object has terms, xlevels, contrasts, tJac
 {
@@ -141,7 +141,7 @@ predict.clm <-
     }
     env$par <- as.vector(coef(object))
     env$par <- env$par[!is.na(env$par)]
-### FIXME: better way to handle NAs in coef?
+### OPTION: Are there better ways to handle NAs in coef?
     ## if(length(env$par) != ncol(env$B1))
     ##   stop(gettextf("design matrix has %d columns, but expecting %d (number of parameters)",
     ##                 ncol(env$B1), length(env$par)))

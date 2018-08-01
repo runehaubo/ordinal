@@ -248,7 +248,7 @@ profile.clm.zeta <-
     ## order lroot and par values and collect in a data.frame:
     ## lroot.order <- order(lroot.wz, decreasing = TRUE)
     lroot.order <- order(par.wz[, wz.name], decreasing = FALSE)
-### FIXME: Need to change how values are ordered here. We should order
+### NOTE: Need to change how values are ordered here. We should order
 ### with par.wz[, wz.name] instead of lroot.wz since if lroot.wz is
 ### flat, the order may be incorrect.
     prof.list[[wz.name]] <-

@@ -235,8 +235,7 @@ anova.clm <- function(object, ...)
   nfitted <- sapply(mlist, function(x) length(x$fitted.values))
   if(any(nfitted != nfitted[1L]))
     stop("models were not all fitted to the same dataset")
-### FIXME: consider comparing y returned by the models for a better
-### check?
+### OPTION: consider comparing y returned by the models for a better check?
   no.par <- sapply(mlist, function(x) x$edf)
   ## order list with increasing no. par:
   ord <- order(no.par, decreasing=FALSE)

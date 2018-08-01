@@ -291,7 +291,7 @@ response.name <- function(terms) {
 }
 
 getB <- function(y, NOM=NULL, X=NULL, offset=NULL, tJac=NULL) {
-### FIXME: Is this function ever used?
+### NOTE: Is this function ever used?
 ### NOTE: no tests that arguments conform.
   nlev <- nlevels(y)
   n <- length(y)
@@ -329,7 +329,6 @@ Deparse <-
            c("call", "expression", "(", "function"),
            control = c("keepInteger", "showAttributes", "keepNA"),
            nlines = -1L)
-### FIXME: test if formals(Deparse) == formals(deparse)??
   deparse(expr=expr, width.cutoff= width.cutoff, backtick=backtick,
           control=control, nlines=nlines)
 

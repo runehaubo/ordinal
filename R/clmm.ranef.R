@@ -5,8 +5,7 @@
 
 ## fixef.clmm <- function(object, ...)  coef(object, ...)
 ## object$coefficients
-### FIXME: This function needs to change such that a *named* vector is
-### returned.
+### NOTE: Should return a *named* vector
 
 ranef <- function(object, ...) UseMethod("ranef")
 ## fixef <- function(object, ...) UseMethod("fixef")
@@ -47,7 +46,7 @@ ranef.clmm <- function(object, condVar=FALSE, ...)
     ranefList <- formatRanef(relist, object$ST, gflevs, asgn,
                              object$dims$qi)
     if(condVar) {
-### FIXME: Should we return matrices for vector-valued random effects
+### OPTION: Should we return matrices for vector-valued random effects
 ### as lmer does?
         ## Add conditional variances of the random effects:
         cond.var <- object$condVar

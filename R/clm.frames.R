@@ -192,7 +192,7 @@ get_clmFormulas <- function(mc, envir=parent.frame(2L))
         stop("unable to interpret 'formula', 'scale' or 'nominal'")
     ## collect all variables in a full formula:
     forms$fullForm <- do.call("getFullForm", forms)
-### FIXME: do we really need to set this name?
+### OPTION: do we actually need to set this name?
     names(forms)[1] <- "formula"
     ## set environment of 'fullForm' to the environment of 'formula':
     attr(forms, "envir") <- environment(forms$fullForm) <- form.envir

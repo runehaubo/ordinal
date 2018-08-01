@@ -1,7 +1,7 @@
 ## This file contains:
 ## Utility functions for fitting CLMMs with clmm2().
 
-### FIXME: Could make use of getFittedC throughout this file...
+### OPTION: Could make use of getFittedC throughout this file...
 
 .negLogLikMfastR <- function(rho) { ## negative log-likelihood
 ### .negLogLikMfast in R
@@ -380,10 +380,9 @@ getNAGQ2 <- function(rho, par) {
             PRnn <- exp(weights * log(pfun(eta1Tmp) - pfun(eta2Tmp)))
         for(i in 1:r)
             ## PRrn[i,] <- apply(PRnn[grFac == i, ], 2, prod)
-### FIXME: Should this be: ???
             PRrn[i,] <- apply(PRnn[grFac == i, ,drop = FALSE], 2, prod)
         PRrn <- PRrn * agqws * dnorm(x=agqns, mean=0, sd=1)
-### FIXME: Could this be optimized by essentially computing dnorm 'by hand'?
+### OPTION: Could this be optimized by essentially computing dnorm 'by hand'?
     })
     -sum(log(rowSums(rho$PRrn)))
 }

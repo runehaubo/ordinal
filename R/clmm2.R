@@ -350,14 +350,13 @@ getNAGQinR <- function(rho, par) {
         else
             ## PRnn <- (pfun(eta1Tmp) - pfun(eta2Tmp))^weights
             PRnn <- exp(weights * log(pfun(eta1Tmp) - pfun(eta2Tmp)))
-### FIXME: The fitted values could be evaluated with getFittedC for
+### OPTION: The fitted values could be evaluated with getFittedC for
 ### better precision.
         for(i in 1:r)
             ## PRrn[i,] <- apply(PRnn[grFac == i, ], 2, prod)
-### FIXME: Should this be: ???
             PRrn[i,] <- apply(PRnn[grFac == i, ,drop = FALSE], 2, prod)
         PRrn <- PRrn * agqws * dnorm(x=agqns, mean=0, sd=1)
-### FIXME: Could this be optimized by essentially computing dnorm 'by hand'?
+### OPTION: Could this be optimized by essentially computing dnorm 'by hand'?
     })
     -sum(log(rowSums(rho$PRrn)))
 }
@@ -482,7 +481,7 @@ getNGHQinR <- function(rho, par) {
         ##     ghqws[h] * exp(ghqns[h]^2) * dnorm(x=ghqns[h]) + SS[i]
         SS[i] <- exp(sum(wt * log(pfun(eta1s) - pfun(eta2s)))) *
           ghqws[h] + SS[i]
-### FIXME: The fitted values could be evaluated with getFittedC for
+### OPTION: The fitted values could be evaluated with getFittedC for
 ### better precision.
       }
     }
@@ -736,8 +735,8 @@ print.summary.clmm2 <- function(x, digits = x$digits, signif.stars =
     } else {
         cat("\nNo random effects\n")
     }
-### FIXME: Should the number of obs. and the number of groups be
-### displayed as in lmer?
+### OPTION: Should the number of obs. and the number of groups be
+### displayed as in clmm?
     coef <- format(round(x$coefficients, digits=digits))
     coef[,4] <- format.pval(x$coefficients[, 4])
     p <- length(x$beta); nxi <- length(x$xi)
