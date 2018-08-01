@@ -81,7 +81,7 @@
     likelihood.
   }
   \item{alpha}{
-    The likelihood is profiled in the 100*(1-alpha)\% confidence region
+    the likelihood is profiled in the 100*(1-alpha)\% confidence region
     as determined by the profile likelihood.
   }
   \item{control}{

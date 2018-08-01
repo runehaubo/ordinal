@@ -21,7 +21,8 @@ clm.control(method = c("Newton", "model.frame", "design", "ucminf", "nlminb",
     \code{"model.frame"} cause \code{\link{clm}} to return the
     \code{model.frame}, \code{"design"} causes \code{\link{clm}} to
     return a list of design matrices etc. that can be used with
-    \code{\link{clm.fit}}.
+    \code{\link{clm.fit}}. \code{ucminf}, \code{nlminb} and \code{optim} refer 
+    to general purpose optimizers.
   }
   \item{sign.location}{change sign of the location part of the model.
   }
@@ -36,7 +37,7 @@ clm.control(method = c("Newton", "model.frame", "design", "ucminf", "nlminb",
   \item{gradTol}{the maximum absolute gradient; defaults to \code{1e-6}.
   }
   \item{maxLineIter}{the maximum number of step halfings allowed if
-    a Newton(-Raphson) step over shoots. Defaults to \code{10}.
+    a Newton(-Raphson) step over shoots. Defaults to \code{15}.
   }
   \item{relTol}{relative convergence tolerence: relative change in the
     parameter estimates between Newton iterations. Defaults to \code{1e-6}.
