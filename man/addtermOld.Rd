@@ -95,4 +95,4 @@ if(require(MASS)) { ## dropterm, addterm, housing
 }
 
 }
-\keyword{models}
+\keyword{internal}
