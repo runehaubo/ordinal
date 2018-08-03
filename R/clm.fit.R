@@ -73,17 +73,24 @@ clm.fit.default <- function(y, ...)
         y <- drop.cols(y, silent=TRUE, drop.scale=FALSE)
     ## Make model environment:
     rho <- do.call(clm.newRho, y)
+    setLinks(rho, y$link)
     start <- set.start(rho, start=y$start, get.start=is.null(y$start),
                        threshold=y$threshold, link=y$link,
                        frames=y)
     rho$par <- as.vector(start) ## remove attributes
-    setLinks(rho, y$link)
     if(y$doFit == FALSE) return(rho)
+    if(length(rho$lambda) > 0 && y$control$method != "nlminb") {
+      message("Changing to 'nlminb' optimizer for flexible link function")
+      y$control$method <- "nlminb"
+    }
     ## Fit the model:
-    fit <- if(y$control$method == "Newton") {
-        clm.fit.NR(rho, y$control)
+    fit <- if(length(rho$lambda) > 0) {
+      clm.fit.flex(rho, control=y$control$ctrl) 
+    } else if(y$control$method == "Newton") {
+      clm.fit.NR(rho, y$control)
     } else {
-        clm.fit.optim(rho, y$control$method, y$control$ctrl) }
+      clm.fit.optim(rho, y$control$method, y$control$ctrl) 
+    }
     ## Adjust iteration count:
     if(y$control$method == "Newton" &&
        !is.null(start.iter <- attr(start, "start.iter")))
@@ -114,13 +121,16 @@ clm.finalize <- function(fit, weights, coef.names, aliased)
     nalpha <- length(aliased$alpha)
     nbeta <- length(aliased$beta)
     nzeta <- length(aliased$zeta)
-    ncoef <- nalpha + nbeta + nzeta ## including aliased coef
-    npar <- sum(!unlist(aliased)) ## excluding aliased coef
+    nlambda <- length(fit$lambda)
+    ncoef <- nalpha + nbeta + nzeta + nlambda ## including aliased coef
+    npar <- sum(!unlist(aliased)) + nlambda  ## excluding aliased coef
     stopifnot(length(fit$par) == npar)
+    if(nlambda) aliased <- c(aliased, list(lambda = FALSE))
+    if(nlambda) coef.names <- c(coef.names, list(lambda="lambda"))
     fit <- within(fit, {
-        coefficients <- rep(NA, nalpha + nbeta + nzeta)
+        coefficients <- rep(NA, ncoef)
         ## ensure correct order of alpha, beta and zeta:
-        keep <- match(c("alpha", "beta", "zeta"), names(aliased),
+        keep <- match(c("alpha", "beta", "zeta", "lambda"), names(aliased),
                       nomatch=0)
         aliased <- lapply(aliased[keep], as.logical)
         for(i in names(aliased))

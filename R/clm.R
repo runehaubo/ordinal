@@ -15,7 +15,8 @@ clm <-
   function(formula, scale, nominal, data, weights, start, subset,
            doFit = TRUE, na.action, contrasts, model = TRUE,
            control = list(),
-           link = c("logit", "probit", "cloglog", "loglog", "cauchit"),
+           link = c("logit", "probit", "cloglog", "loglog", "cauchit", 
+                    "Aranda-Ordaz", "log-gamma"),
            threshold = c("flexible", "symmetric", "symmetric2", "equidistant"), ...)
 {
     mc <- match.call(expand.dots = FALSE)

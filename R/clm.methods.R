@@ -1,12 +1,11 @@
 ## This file contains:
 ## Implementation of various methods for clm objects.
 
-print.clm <-
-  function(x, digits = max(3, getOption("digits") - 3), ...)
+print.clm <- function(x, digits = max(3, getOption("digits") - 3), ...)
 {
   cat("formula:", Deparse(formula(x$terms)), fill=TRUE)
-### NOTE: deparse(x$call$formula) will not always work since this may
-### not always be appropriately evaluated.
+  ### NOTE: deparse(x$call$formula) will not always work since this may
+  ### not always be appropriately evaluated.
   if(!is.null(x$call$scale))
     cat("scale:  ", Deparse(formula(x$S.terms)), fill=TRUE)
   if(!is.null(x$call$nominal))
@@ -16,26 +15,29 @@ print.clm <-
   if(!is.null(x$call$subset))
     cat("subset: ", Deparse(x$call$subset), fill=TRUE)
   cat("\n")
-
+  
   print(x$info, row.names=FALSE, right=FALSE)
-
+  
   if(length(x$beta)) {
     if(sum(x$aliased$beta) > 0) {
       cat("\nCoefficients: (", sum(x$aliased$beta),
           " not defined because of singularities)\n", sep = "")
     }
     else cat("\nCoefficients:\n")
-    print.default(format(x$beta, digits = digits),
-                  quote = FALSE)
+    print.default(format(x$beta, digits = digits), quote = FALSE)
   }
-    if(length(x$zeta)) {
+  if(length(x$zeta)) {
     if(sum(x$aliased$zeta) > 0)
       cat("\nlog-scale coefficients: (", sum(x$aliased$zeta),
           " not defined because of singularities)\n", sep = "")
     else cat("\nlog-scale coefficients:\n")
-    print.default(format(x$zeta, digits = digits),
-                  quote = FALSE)
+    print.default(format(x$zeta, digits = digits), quote = FALSE)
   }
+  if(length(x$lambda)) {
+    cat("\nLink coefficient:\n")
+    print.default(format(x$lambda, digits = digits), quote = FALSE)
+  }
+  
   if(length(x$alpha) > 0) {
     if(sum(x$aliased$alpha) > 0)
       cat("\nThreshold coefficients: (", sum(x$aliased$alpha),
@@ -48,7 +50,7 @@ print.clm <-
       print.default(format(x$alpha, digits = digits),
                     quote = FALSE)
   }
-
+  
   if(nzchar(mess <- naprint(x$na.action))) cat("(", mess, ")\n", sep="")
   return(invisible(x))
 }
@@ -159,6 +161,7 @@ print.summary.clm <-
   nalpha <- length(x$alpha)
   nbeta <- length(x$beta)
   nzeta <- length(x$zeta)
+  nlambda <- length(x$lambda)
   if(nbeta > 0) {
     if(sum(x$aliased$beta) > 0)
       cat("\nCoefficients: (", sum(x$aliased$beta),
@@ -174,6 +177,12 @@ print.summary.clm <-
           " not defined because of singularities)\n", sep = "")
     else cat("\nlog-scale coefficients:\n")
     printCoefmat(x$coefficients[nalpha + nbeta + 1:nzeta, , drop=FALSE],
+                 digits=digits, signif.stars=signif.stars,
+                 has.Pvalue=TRUE, ...)
+  }
+  if(nlambda > 0) {
+    cat("\nLink coefficients:\n")
+    printCoefmat(x$coefficients[nalpha + nbeta + nzeta + nlambda, , drop=FALSE],
                  digits=digits, signif.stars=signif.stars,
                  has.Pvalue=TRUE, ...)
   }
