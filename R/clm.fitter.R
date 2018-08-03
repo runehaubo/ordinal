@@ -336,8 +336,8 @@ clm.hess <- function(rho) {
         g1 <- gfun(eta1)
         g2 <- gfun(eta2)
         wtprpr <- wtpr/fitted ## Phi3
-        dg.psi <- crossprod(B1 * gfun(eta1) * wtpr / sigma^2, B1) -
-            crossprod(B2 * gfun(eta2) * wtpr / sigma^2, B2)
+        dg.psi <- crossprod(B1 * g1 * wtpr / sigma^2, B1) -
+            crossprod(B2 * g2 * wtpr / sigma^2, B2)
         ## upper left:
         D <- dg.psi - crossprod(C2, (C2 * wtprpr))
         if(k <= 0) return(-D) ## no scale predictors
