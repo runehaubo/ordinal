@@ -209,7 +209,7 @@ extractAIC.clm <- function(fit, scale = 0, k = 2, ...) {
 
 ### NOTE: AIC.clm implicitly defined via logLik.clm
 
-anova.clm <- function(object, ...)
+anova.clm <- function(object, ..., type = c("I", "II", "III", "1", "2", "3"))
 ### requires that clm objects have components:
 ###  edf: no. parameters used
 ###  call$formula
@@ -221,13 +221,13 @@ anova.clm <- function(object, ...)
   mc <- match.call()
   dots <- list(...)
   ## remove 'test' and 'type' arguments from dots-list:
-  not.keep <- which(names(dots) %in% c("test", "type"))
+  not.keep <- which(names(dots) %in% c("test"))
   if(length(not.keep)) {
-    message("'test' and 'type' arguments ignored in anova.clm\n")
+    message("'test' argument ignored in anova.clm\n")
     dots <- dots[-not.keep]
   }
-  if(length(dots) == 0)
-    stop('anova is not implemented for a single "clm" object')
+  if(length(dots) == 0) return(single_anova(object, type=type))
+  ## Multi-model anova method proceeds:
   mlist <- c(list(object), dots)
   if(!all(sapply(mlist, function(model)
                  inherits(model, c("clm", "clmm")))))

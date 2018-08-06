@@ -11,11 +11,11 @@ importFrom(grDevices,
            dev.interactive,
            devAskNewPage)
 importFrom(utils,
-           combn,
-           packageDescription)
+           "combn", "packageDescription", "as.roman")
 importFrom(ucminf,
            ucminf)
-importFrom("stats", ".checkMFClasses", ".getXlevels", "AIC",
+importFrom("stats", 
+           ".checkMFClasses", ".getXlevels", "AIC",
            "add.scope", "approx", "as.formula", "binomial", "coef",
            "confint", "dcauchy", "dlogis", "dnorm", "drop.scope",
            "drop.terms", "extractAIC", "fitted", "formula", "glm.fit",
@@ -25,7 +25,8 @@ importFrom("stats", ".checkMFClasses", ".getXlevels", "AIC",
            "pcauchy", "pchisq", "pgamma", "plogis", "pnorm",
            "printCoefmat", "profile", "qchisq", "qlogis", "qnorm",
            "runif", "setNames", "spline", "terms", "update.formula",
-           "vcov", "nobs")
+           "vcov", "nobs", "delete.response", "lm.fit", "resid")
+
 ## importFrom(stats,
 ##            nobs)
 import(methods)
