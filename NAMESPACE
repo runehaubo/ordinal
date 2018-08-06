@@ -14,6 +14,8 @@ importFrom(utils,
            "combn", "packageDescription", "as.roman")
 importFrom(ucminf,
            ucminf)
+importFrom(numDeriv,
+           grad, hessian)
 importFrom("stats", 
            ".checkMFClasses", ".getXlevels", "AIC",
            "add.scope", "approx", "as.formula", "binomial", "coef",

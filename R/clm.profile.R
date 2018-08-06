@@ -1,24 +1,26 @@
 ## This file contains:
 ## profile and confint methods for clm objects.
 
-profile.clm <-
-  function(fitted, which.beta = seq_len(nbeta),
-           which.zeta = seq_len(nzeta), alpha = 0.001,
-           max.steps = 50, nsteps = 8, trace = FALSE,
-           step.warn = 5, control = list(), ...)
-### match and tests arguments and dispatch to .zeta and .beta
-### functions for the actual profiling.
-
-### which.[beta, zeta] - numeric or character vectors.
-
-### Works for models with nominal and scale effects and for any number
-### of aliased coefs.
+profile.clm <- function(fitted, which.beta = seq_len(nbeta),
+                        which.zeta = seq_len(nzeta), alpha = 0.001,
+                        max.steps = 50, nsteps = 8, trace = FALSE,
+                        step.warn = 5, control = list(), ...)
 {
+  ### match and tests arguments and dispatch to .zeta and .beta
+  ### functions for the actual profiling.
+  
+  ### which.[beta, zeta] - numeric or character vectors.
+  
+  ### Works for models with nominal and scale effects and for any number
+  ### of aliased coefs.
+  
   ## match and test arguments:
-    if(any(is.na(diag(vcov(fitted)))))
-        stop("Cannot get profile when vcov(fitted) contains NAs", call.=FALSE)
+  if(fitted$link %in% c("Aranda-Ordaz", "log-gamma"))
+    stop("Profiling not implemented for models with flexible link function")
+  if(any(is.na(diag(vcov(fitted)))))
+    stop("Cannot get profile when vcov(fitted) contains NAs", call.=FALSE)
   stopifnot(is.numeric(alpha) && length(alpha) == 1 &&
-            alpha > 0 && alpha < 1)
+              alpha > 0 && alpha < 1)
   stopifnot(round(max.steps) > round(nsteps))
   stopifnot(round(nsteps) > round(step.warn))
   stopifnot(round(nsteps) > 0 && round(step.warn) >= 0)
@@ -72,6 +74,9 @@ profile.clm.beta <-
     if(!is.null(zeta <- fitted$zeta)) {
         names(zeta) <- paste("sca", names(fitted$zeta), sep=".")
         orig.par <- c(orig.par, zeta)
+    }
+    if(!is.null(lambda <- fitted$lambda)) {
+      orig.par <- c(orig.par, lambda)
     }
 ### NOTE: we need to update zeta.names to make names(orig.par)
 ### unique. This is needed to correctly construct the resulting
@@ -386,6 +391,11 @@ confint.clm <-
 {
   ## match and test arguments
   type <- match.arg(type)
+  if(object$link %in% c("Aranda-Ordaz", "log-gamma") && type == "profile") {
+    message(paste("Profile intervals not available for models with flexible",
+            "link function:\n reporting Wald intervals instead"))
+    type <- "Wald"
+  }
   stopifnot(is.numeric(level) && length(level) == 1 &&
             level > 0 && level < 1)
   trace <- as.logical(trace)[1]

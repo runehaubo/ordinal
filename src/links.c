@@ -70,15 +70,15 @@ double d_plgamma(double eta, double lambda, int lower_tail)
     v = R_pow_di(lambda, -2) * exp(lambda * eta);
     if(lambda < 1.0e-6)
       v = 1 - pgamma(v, R_pow_di(lambda, -2), /*scale = */ 1,
-		     lower_tail, 0 /*give_log*/);
+		     1 /*lower_tail*/, 0 /*give_log*/);
     if(lambda > -1.0e-6)
       v = pgamma(v, R_pow_di(lambda, -2), /*scale = */ 1,
-		 lower_tail, 0/*give_log*/);
+                 1 /*lower_tail*/, 0 /*give_log*/);
     if(lambda >= -1.0e-6 && lambda <= 1.0e-6)
       // pnorm(x, mu, sigma, lower_tail, give_log);
       v = pnorm(eta, 0., 1., 1, 0);
   }
-  return !lower_tail ? 1 - v : v;
+  return lower_tail ? v : 1 - v;
 }
 
 /*-------------------------------------------------------*/

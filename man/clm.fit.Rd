@@ -19,7 +19,8 @@ clm.fit(y, ...)
 \method{clm.fit}{factor}(y, X, S, N, weights = rep(1, nrow(X)),
      offset = rep(0, nrow(X)), S.offset = rep(0, nrow(X)),
      control = list(), start, doFit=TRUE,
-     link = c("logit", "probit", "cloglog", "loglog", "cauchit"),
+     link = c("logit", "probit", "cloglog", "loglog", "cauchit", 
+              "Aranda-Ordaz", "log-gamma"),
      threshold = c("flexible", "symmetric", "symmetric2", "equidistant"),
      ...)
 

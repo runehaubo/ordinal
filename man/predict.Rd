@@ -79,7 +79,10 @@
   newdata is contained in the same subspace as the original data. That
   cannot be checked accurately, so a warning is issued
   (cf. \code{\link{predict.lm}}).
-
+  
+  If a flexible link function is used (\code{Aranda-Ordaz} or \code{log-gamma})
+  standard errors and confidence intervals of predictions do not take the
+  uncertainty in the link-parameter into account. 
 }
 \value{
   A list containing the following components

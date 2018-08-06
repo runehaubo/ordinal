@@ -31,6 +31,9 @@ setLinks <- function(rho, link) {
                      "log-gamma" = function(x, lambda) glgamma(x, lambda)
                      )
   rho$link <- link
+  rho$nlambda <- if(rho$link %in% c("Aranda-Ordaz", "log-gamma")) 1 else 0
+  if(rho$link == "Aranda-Ordaz") rho$lambda <- 1
+  if(rho$link == "log-gamma") rho$lambda <- 0.1
 }
 
 makeThresholds <- function(y.levels, threshold) { ## , tJac) {

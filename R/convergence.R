@@ -199,12 +199,18 @@ conv.check <-
         res$messages <-
             gettextf("Model failed to converge with max|grad| = %g (tol = %g)",
                      max.grad, control$gradTol)
+        ## Compute var-cov:
+        vcov <- try(chol2inv(ch), silent=TRUE)
+        if(!inherits(vcov, "try-error")) res$vcov[] <- vcov
         return(res)
     }
     if(!is.null(Theta.ok) && !Theta.ok) {
         res$code <- -3L
         res$messages <-
             "not all thresholds are increasing: fit is invalid"
+        ## Compute var-cov:
+        vcov <- try(chol2inv(ch), silent=TRUE)
+        if(!inherits(vcov, "try-error")) res$vcov[] <- vcov
         return(res)
     }
     zero <- sum(abs(evd) < tol)
