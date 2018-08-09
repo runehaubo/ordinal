@@ -1,15 +1,15 @@
 Package: ordinal
 Type: Package
 Title: Regression Models for Ordinal Data
-Version: 2018.4-19.9005
+Version: 2018.4-19.9006
 Date: 2018-04-19
 Authors@R: person(given="Rune Haubo Bojesen", family="Christensen",
     email="rune.haubo@gmail.com", role=c("aut", "cre"))
 LazyData: true
 ByteCompile: yes
-Depends: R (>= 2.13.0), methods
+Depends: R (>= 2.13.0), stats, methods
 Imports: ucminf, MASS, Matrix, numDeriv
-Suggests: lme4, nnet, xtable, testthat (>= 0.8)
+Suggests: lme4, nnet, xtable, testthat (>= 0.8), tools
 Description: Implementation of cumulative link (mixed) models also known
     as ordered regression models, proportional odds models, proportional
     hazards models for grouped survival times and ordered logit/probit/...
