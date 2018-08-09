@@ -99,8 +99,9 @@ makeThresholds <- function(y.levels, threshold) { ## , tJac) {
                       rbind(diag(-1, ntheta / 2)[(ntheta / 2):1,],
                             diag(ntheta / 2)))
         tJac[,2] <- rep(0:1, each = ntheta / 2)
-        alpha.names <- c("central.1", "central.2",
-                         paste("spacing.", 1:(nalpha-2), sep=""))
+        alpha.names <- c("central.1", "central.2")
+        if(nalpha > 2) alpha.names <- 
+          c(alpha.names, paste("spacing.", 1:(nalpha-2), sep=""))
       }
     }
     ## Assumes latent mean is zero:
