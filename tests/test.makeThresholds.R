@@ -1,7 +1,9 @@
 # test.makeThresholds.R
 
+library(ordinal)
+
 # Prvious bug which is now fixed:
-res <- makeThresholds(letters[1:3], "symmetric")
+res <- ordinal:::makeThresholds(letters[1:3], "symmetric")
 stopifnot(length(res$alpha.names) == res$nalpha)
 # length(res$alpha.names) used to be 4
 
