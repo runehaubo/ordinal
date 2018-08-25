@@ -13,3 +13,4 @@ NEWS.html
 ^revdep$
 ^revdep_archive$
 ^misc$
+^old_vignettes$
