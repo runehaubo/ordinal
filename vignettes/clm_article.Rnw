@@ -1,7 +1,8 @@
-\documentclass[article]{jss}
-% \documentclass[nojss]{jss}
+% \documentclass[article]{article}
+% \documentclass[article]{jss}
+\documentclass[nojss]{jss}
 
-%% -- LaTeX packages and custom commands ---------------------------------------
+%% -- Latex packages and custom commands ---------------------------------------
 
 %% recommended packages
 \usepackage{thumbpdf,lmodern,amsmath,amssymb,bm,url}
@@ -82,8 +83,8 @@ The package implements methods for profile likelihood confidence intervals, pred
 
 \begin{document}
 
-% \tableofcontents
-% \newpage
+This is a copy of an article submitted for publication in Journal of
+Statistical Software (\url{https://www.jstatsoft.org/}).
 
 %% -- Introduction -------------------------------------------------------------
 
@@ -121,29 +122,6 @@ with a logit link is widely known as the \emph{proportional odds
   model} due to \citet{mccullagh80} and with a complementary log-log
 link, the model is sometimes referred to as the \emph{proportional hazards model} for
 grouped survival times.
-
-% Ordinal response variables can be analyzed with omnibus Pearson
-% $\chi^2$ tests, base-line logit models or log-linear models. This
-% corresponds to assuming that the response variable is nominal and
-% information about the ordering of the categories will be
-% ignored. Alternatively numbers can be attached to the response
-% categories, e.g., $1, 2, \ldots, J$ and the resulting scores can be
-% analyzed by conventional linear regression and ANOVA models. This
-% approach is in a sense over-confident since the data are assumed to
-% contain more information than they actually do. Observations on an
-% ordinal scale are classified in ordered categories, but the distance
-% between the categories is generally unknown. By using linear models
-% the choice of scoring impose assumptions about the distance between
-% the response categories. Further, standard errors and tests from
-% linear models rest on the assumption that the response, conditional on
-% the explanatory variables, is normally distributed. This cannot be the
-% case since the scores are discrete and responses beyond the end
-% categories are not possible. If there are many responses in the end
-% categories, there will  most likely be variance heterogeneity to which
-% $F$ and $t$ tests can be rather sensitive.
-% Methods for continuous data are in practice often applied to ordinal data
-% and if there are many response categories and the response does not pile
-% up in the end categories, such methods can also be useful -- in particular in the initial stages of a data analysis.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \subsection{Software review}
@@ -245,9 +223,6 @@ are cumulative probabilities\footnote{we have suppressed the
 $\bm x_i^\top$ is a $p$-vector of regression variables for the parameters,
 $\bm\beta$ without a leading column for an intercept and $F$ is the inverse link
 function.
-% , $F$ is the CDF of a distribution in the location-scale
-% family of distributions. Common choices of $F$ are the CDFs of the
-% logistic, normal, and Gumbel distributions.
 %
 The thresholds (also known as cut-points or intercepts) are strictly ordered:
 \begin{equation*}
@@ -324,8 +299,6 @@ which is the log-likelihood function evaluated at $\beta_a$ while keeping the re
 
 A quadratic approximation to the log-likelihood slice is $(\hat\beta_a - \beta_a)^2 / 2\tau_a^2$ where the \emph{curvature unit} $\tau_a$ is the squareroot of $a$'th diagonal element of the Hessian of $-\ell(\hat{\bm\theta}, \hat{\bm\beta}; \bm y)$.
 
-% \emph{I should probably refer to $\bm\alpha$ (or similar symbol) for the joint parameter vector so that I don't have to distinguish between $\theta$ and $\beta$.}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Link functions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -392,38 +365,6 @@ errors remain unchanged.
 
 Details of the most common link functions are described in Table~\ref{tab:linkFunctions}.
 
-% \begin{table}[t!]
-%   \begin{center}
-%   \caption{Summary of various link functions.\label{tab:linkFunctions}}
-%   \footnotesize
-%   \begin{tabular}{llllll}
-%     \hline
-%     Name & logit & probit & log-log & clog-log$^a$ & cauchit \\
-%     \hline
-%     Distribution & logistic & normal & Gumbel (max)$^b$ & Gumbel (min)$^b$ &
-%     Cauchy$^c$ \\
-%     Shape & symmetric & symmetric & right skew & left skew &
-%     kurtotic \\
-%     Link function ($F^{-1}$)  & $\log[\gamma / (1 - \gamma)]$ & $\Phi^{-1}(\gamma)$ &
-%     $-\log[-\log(\gamma)]$ & $\log[ -\log(1 - \gamma)]$ & $\tan[\pi
-%     (\gamma - 0.5)]$ \\
-%     Inverse link ($F$) & $1 / [1 + \exp(\eta)]$ & $\Phi(\eta)$ &
-%     $\exp(-\exp(-\eta))$ & $1 - \exp[-\exp(\eta)]$ & $\arctan(\eta)/\pi + 0.5$ \\
-%     Density ($f = F'$) & $\exp(-\eta) / [1 + \exp(-\eta)]^2$ & $\phi(\eta)$ &
-%     $\exp(-\exp(-\eta) - \eta)$ & $\exp[-\exp(\eta) + \eta]$ & $1 / [\pi(1 + \eta^2)]$ \\
-%     \hline
-%   \end{tabular}
-%   \end{center}
-%   \footnotesize
-%
-%   $^a$: the \emph{complementary log-log} link \\
-%   $^b$: the Gumbel distribution is also known as the extreme value
-%   (type I) distribution for extreme minima or maxima. It is also
-%   sometimes referred to as the Weibull (or log-Weibull) distribution
-%   (\url{http://en.wikipedia.org/wiki/Gumbel_distribution}). \\
-%   $^c$: the Cauchy distribution is a $t$-distribution with one df \\
-% \end{table}
-
 \begin{table}[t!]
   \begin{center}
   %\footnotesize
@@ -450,15 +391,22 @@ Details of the most common link functions are described in Table~\ref{tab:linkFu
     \hline
   \end{tabular}
   \end{center}
-  \footnotesize
-
-  $^a$: the \emph{complementary log-log} link \\
+  % \footnotesize
+  %
+  % $^a$: the \emph{complementary log-log} link \\
+  % $^b$: the Gumbel distribution is also known as the extreme value
+  % (type I) distribution for extreme minima or maxima. It is also
+  % sometimes referred to as the Weibull (or log-Weibull) distribution
+  % (\url{http://en.wikipedia.org/wiki/Gumbel_distribution}). \\
+  % $^c$: the Cauchy distribution is a $t$-distribution with one df
+  \caption{Summary of the five standard link functions.
+  $^a$: the \emph{complementary log-log} link;
   $^b$: the Gumbel distribution is also known as the extreme value
   (type I) distribution for extreme minima or maxima. It is also
   sometimes referred to as the Weibull (or log-Weibull) distribution
-  (\url{http://en.wikipedia.org/wiki/Gumbel_distribution}). \\
-  $^c$: the Cauchy distribution is a $t$-distribution with one df
-  \caption{Summary of the five standard link functions.\label{tab:linkFunctions}}
+  (\url{http://en.wikipedia.org/wiki/Gumbel_distribution});
+  $^c$: the Cauchy distribution is a $t$-distribution with one degree of freedom.
+  \label{tab:linkFunctions}}
 \end{table}
 
 
@@ -468,9 +416,6 @@ in a number of ways including structured thresholds, partial proportional odds,
 scale effects and flexible link functions. The following sections will describe
 these extensions of the basic CLM.
 
-% Random-effects can also be included,
-% but we defer the discussion of CLMs with random-effects, the cumulative link
-% mixed models (CLMMs) to section XX.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extensions of cumulative link models} \label{sec:extensions-of-clms}
@@ -633,7 +578,6 @@ In general we define $\bm\Theta$ as a matrix with $J-1$ columns and with 1 row f
 
 Note that variables in $\bm X$ cannot also be part of $\bm W$ if the model is to remain identifiable. \pkg{ordinal} detects this and automatically removes the offending variables from $\bm X$.
 
-% Structured thresholds can be combined with nominal effects which leads to...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Flexible link functions}
@@ -752,7 +696,6 @@ The NR algorithm in \pkg{ordinal} attempts to satisfy the absolute criterion fir
 Convergence to a well-defined optimum is achieved when the gradient of the negative log-likelihood function with respect to the parameters is small and the Hessian is positive definite i.e., having only positive eigenvalues away from zero.
 %
 Identifiability problems occur when the likelihood function is flat in directions of one or more parameters (or linear functions of the parameters) while well-defined, i.e., pointy in other directions.
-% In cases where a parameter is undefined the likelihood function will be completely flat in that direction which causes the Hessian to have one eigenvalue at zero.
 It may happen that a parameter is exactly unidentifiable and \code{clm} is in some cases (including rank-deficient design matrices) able to detect this and exclude the parameter from the optimization procedure. In other cases the likelihood is almost flat in one or more directions. These cases are not uncommon in practice and it is not possible to reduce the parameter space before optimizing the model.
 To measure the degree of empirical identifiability \code{clm} reports the condition number of the Hessian which is the ratio of the largest to the smallest eigenvalue.
 A large condition number of the Hessian does not necessarily mean there is a
@@ -777,15 +720,11 @@ The assessment of the number of correctly determined decimals and significant di
 \citet{pratt81} and \citet{burridge81} showed (seemingly independent
 of each other) that the log-likelihood function of the basic cumulative link
 model~\eqref{eq:BasicCLM}
-%with the link functions considered in Table~\ref{tab:linkFunctions}%, except for the cauchit link,
 is concave. This means that there is a unique global optimum of the log-likelihood function and therefore no risk of convergence to a local optimum.
 
 It also means that the Hessian matrix for the negative log-likelihood is strictly positive definite and therefore also that the Newton step is always in direction of higher likelihood. The genuine Newton step may be too long to actually cause an increase in likelihood from one iteration to the next (this is called ``overshoot''). This is easily overcome by successively halving the length of the Newton step until an increase in likelihood is achieved.
 
 Exceptions to the strict concavity of the log-likelihood function include models using the cauchit link, flexible link functions as well as models with scale effects. Notably models with structured thresholds as well as nominal effects do not affect the linearity of the predictor, $\eta_{ij}$ and so are also guaranteed to have concave log-likelihoods.
-
-% When the log-likelihood is not strictly concave it means that the Hessian matrix can become singular or negative definite. For this reason the NR algorithm regularizes the Hessian matrix whenever it is not positive definite by adding an amount corresponding to $1 + $ the smallest negative eigenvalue to the diagonal before computing the Newton step. There is no guarantee that this heuristic leads to a step in a direction of greater likelihood so more and more is added to the diagonal until the step is in a favorable direction.
-%but it appears to work well in practice.
 
 The non-decreasing restriction on the threshold parameters $\{\theta_j\}$ is dealt with by defining $\ell(\bm\theta, \bm\beta; y) = \infty$ when $\{\theta_j\}$ is not in a non-decreasing sequence. If the algorithm attempts evaluation at such illegal values step-halving automatically brings the algorithm back on track.
 
@@ -945,7 +884,7 @@ The \code{summary} method prints basic information about the fitted model.
 % most of which is self explanatory.
 %
 The primary result is the coefficient table with parameter estimates,
-standard errors and Wald based $p$-values for tests of the
+standard errors and Wald based $p$~values for tests of the
 parameters being zero. If one of the flexible link functions (\code{link = "log-gamma"} or \code{link = "Aranda-Ordaz"}) is used a coefficient table for the link parameter, $\lambda$ is also included.
 The maximum likelihood estimates of the model coefficients are:%
 %
@@ -964,10 +903,6 @@ bitterness of wine, i.e., rating in higher categories is more likely.
 Because the treatment contrast coding which is the default in \proglang{R} was used, $\{\hat\theta_j\}$ refers to the thresholds at the setting with
 $\mathtt{temp}_i = \mathtt{cold}$ and $\mathtt{contact}_i = \mathtt{no}$.
 %
-% \emph{Using the standard treatment contrast coding means that thresholds refer to the first level of \code{temp} (\code{"cold"}) and \code{contact} (\code{"no"})}
-%
-% \emph{It is helpful to think of $\bm x_i^\top \bm\beta$ as modelling a shift of the thresholds $\{\theta\}$ and we may denote by $\tilde{\theta}_{ij} = \theta_j \bm x_i^\top \bm\beta$ the $j$'th threshold for the $i$'th observation.%
-% }
 Three natural and complementing interpretations of this model are
 %
 \begin{enumerate}
@@ -976,12 +911,12 @@ Three natural and complementing interpretations of this model are
   \item The odds ratio of bitterness being rated in category $j$ or above ($\mathrm{OR}(Y \geq j)$) is $\exp(\hat\beta_2(\mathtt{yes} - \mathtt{no})) = 4.61$.
 \end{enumerate}
 %
-Note that there are no $p$ values displayed for the threshold coefficients because it usually does not make sense to test if they equal zero.
+Note that there are no $p$~values displayed for the threshold coefficients because it usually does not make sense to test if they equal zero.
 
 \begin{figure}
   \centering
   \includegraphics[width=6cm]{./static_figs/fig-fig2}
-  \caption{Illustration of the effect of temperature in the standard cumulative link model in Equation~\eqref{eq:CLM} for the wine data in Table~\ref{tab:wineData} through a latent variable interpretation.\label{fig:standard_clm}}
+  \caption{Illustration of the effect of temperature in the standard cumulative link model in Equation~\ref{eq:CLM} for the wine data in Table~\ref{tab:wineData} through a latent variable interpretation.\label{fig:standard_clm}}
 \end{figure}
 
 The number of Newton-Raphson iterations is given below \code{niter}
@@ -1003,7 +938,7 @@ Likelihood ratio tests, though asymptotically equivalent to the Wald tests usual
 fm2 <- clm(rating ~ temp, data=wine)
 anova(fm2, fm1)
 @
-which in this case produces a slightly lower $p$-value.
+which in this case produces a slightly lower $p$~value.
 Equivalently we can use \code{drop1} to obtain likelihood ratio
 tests of the explanatory variables while \emph{controlling} for the
 remaining variables:
@@ -1023,7 +958,7 @@ Confidence intervals of the parameter estimates are provided by the \code{confin
 confint(fm1)
 @
 
-The cumulative link model in \eqref{eq:CLM} assumes that the
+The cumulative link model in Equation~\ref{eq:CLM} assumes that the
 thresholds, $\{\theta_j\}$ are constant for all values of the
 remaining explanatory variables, here \code{temp} and
 \code{contact}. This is generally referred to as the
@@ -1053,11 +988,7 @@ allow the threshold parameters to depend on \code{contact} which leads to the so
     i = 1,\ldots, n, \quad j = 1, \ldots, J-1
   \end{array}
 \end{equation}
-% This means that the thresholds
-% $\{\theta_{ij} = \theta_j + \theta_{2j} (\mathtt{contact}_i)\}$
-% have the form of linear regression in which
-% $\theta_j$ are the intercepts and $\theta_{j2}$ are effects that depend
-% on contact.
+%
 One way to view this model is to think of two sets of thresholds being applied at conditions with and without contact as illustrated in Figure~\ref{fig:clm_nominal}.
 The model is specified as follows with \code{clm}:
 <<>>=
@@ -1074,7 +1005,6 @@ Here coefficients translate to the following parameter functions:
 \begin{equation}  \label{eq:nom_parameters}
 \begin{gathered}
   \hat\beta(\mathtt{warm} - \mathtt{cold})= 2.52, \\
-%  ~~\hat\beta_2(\mathtt{yes}) - \hat\beta_2(\mathtt{no}) = 1.53, \\
   \{\hat\theta_j\} = \{-1.32,~ 1.25,~ 3.55,~ 4.66\}, \\
   \{ \hat{\tilde{\beta}}_j(\mathtt{yes} - \mathtt{no}) \} =
   \{-1.62,~ -1.51,~ -1.67,~ -1.05\}.
@@ -1085,23 +1015,11 @@ Again $\{ \theta_j \}$ refer to the thresholds at $\mathtt{temp}_i = \mathtt{col
 %
 The odds ratio of bitterness being rated in category $j$ or above ($\mathrm{OR}(Y \geq j)$) now depends on $j$: $\{\exp(-\hat{\tilde{\beta}}_j(\mathtt{yes} - \mathtt{no}))\} = \{ 5.03,~ 4.53,~ 5.34,~ 2.86\}$.
 %
-% The first five threshold
-% parameters have \code{.(Intercept)} appended their names indicating
-% that these are the estimates of $\theta_j$ corresponding to the first level of contact (\code{"no"}).
-% The following five threshold parameters
-% have \code{.contactyes} appended their name indicating that these
-% parameters are differences between the threshold parameters at the two
-% levels of contact (\code{yes" - "no"}).
-%
-% As can be seen from the output,
-% the effect of \code{contact} is almost constant across thresholds
-% and around $-1.5$ corresponding to the estimate of contact ($\beta_2$) from \code{fm1} on
-% except for the change of sign.
 
 \begin{figure}
   \centering
   \includegraphics[width=6cm]{./static_figs/fig-figNom2}
-  \caption{Illustration of nominal effects leading to different sets of thresholds being applied for each level of \code{contact} in a latent variable interpretation, cf., Equation~\eqref{eq:CLM_nominal}.\label{fig:clm_nominal}}
+  \caption{Illustration of nominal effects leading to different sets of thresholds being applied for each level of \code{contact} in a latent variable interpretation, cf., Equation~\ref{eq:CLM_nominal}.\label{fig:clm_nominal}}
 \end{figure}
 
 The resulting thresholds for each level of \code{contact}, i.e., the estimated $\bm\Theta$-matrix can be extracted with:
@@ -1147,9 +1065,6 @@ This function moves all terms in \code{formula} and copies all terms in \code{sc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %
-% Latent variable motivation - location-scale model - scale effects in an CLM - one way to handle non-proportional odds.
-%
-% \code{nominal_test}, \code{scale_test}, sign and interpretation of nominal effects, the \code{Theta} component.
 To allow the scale of the latent variable distribution to depend on explanatory variables we could for instance consider the following model where the scale is allowed to differ between cold and warm conditions. The location of the latent distribution is allowed to depend on both temperature and contact:
 \begin{equation}  \label{eq:CLM_scale_wine}
   \begin{gathered}
@@ -1163,7 +1078,7 @@ This model structure is illustrated in Figure~\ref{fig:clm_scale} and can be est
 fm.sca <- clm(rating ~ temp + contact, scale = ~ temp, data=wine)
 summary(fm.sca)
 @
-In a latent variable interpretation the location of the latent distribution is shifted $2.63\sigma^*$ (scale units) from cold to warm conditions and $1.59\sigma^*$ from absense to presence of contact. The scale of the latent distribution is $\sigma^*$ at cold conditions but $\sigma^* \exp(\zeta(\mathtt{warm} - \mathtt{cold})) = \sigma^*\exp(0.095) = 1.10 \sigma^*$, i.e., 10\% higher, at warm conditions. However, observe that the $p$ value for the scale effect in the summary output shows that the ratio of scales is not significantly different from 1 (or equivalently that the difference on the log-scale is not different from 0).
+In a latent variable interpretation the location of the latent distribution is shifted $2.63\sigma^*$ (scale units) from cold to warm conditions and $1.59\sigma^*$ from absense to presence of contact. The scale of the latent distribution is $\sigma^*$ at cold conditions but $\sigma^* \exp(\zeta(\mathtt{warm} - \mathtt{cold})) = \sigma^*\exp(0.095) = 1.10 \sigma^*$, i.e., 10\% higher, at warm conditions. However, observe that the $p$~value for the scale effect in the summary output shows that the ratio of scales is not significantly different from 1 (or equivalently that the difference on the log-scale is not different from 0).
 
 Scale effects offer an alternative to nominal effects (partial proportional odds) when non-proportional odds structures are encountered in the data. Using scale effects is often a better approach because the model is well-defined for all values of the explanatory variables irrespective of translocation and scaling of covariates. Scale effects also use fewer parameters which often lead to more sensitive tests than nominal effects. Potential scale effects of variables already included in \code{formula} can be discovered using \code{scale_test}. This function adds each model term in \code{formula} to \code{scale} in turn and reports the likelihood ratio statistic in an \code{add1} fashion:
 <<>>=
@@ -1177,7 +1092,7 @@ or add terms to the (location) \code{formula}.
 \begin{figure}
   \centering
   \includegraphics[width=6cm]{./static_figs/fig-figSca}
-  \caption{Illustration of scale effects leading to different scales of the latent variable, cf., Equation~\eqref{eq:CLM_scale_wine}.\label{fig:clm_scale}}
+  \caption{Illustration of scale effects leading to different scales of the latent variable, cf., Equation~\ref{eq:CLM_scale_wine}.\label{fig:clm_scale}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1239,17 +1154,6 @@ In addition to facilitating the generally quite accurate profile likelihood conf
 
 As an example, the profile likelihood of model coefficients for \code{temp} and \code{contact} in \code{fm1} can be obtained with
 %
-% The profile likelihood can be used for several things. Two of the most
-% important objectives are to provide accurate likelihood confidence
-% intervals and to illustrate effects of parameters in the fitted
-% model.
-%
-% Confidence intervals based on the profile likelihood were already
-% obtained in section~\ref{sec:fitt-cumul-link} and will not be treated
-% any further here.
-%
-% The effects of \code{contact} and \code{temp} can be illustrated
-% with
 <<profileLikelihood, echo=TRUE>>=
 pr1 <- profile(fm1, alpha=1e-4)
 plot(pr1)
@@ -1385,9 +1289,9 @@ By \emph{fitted values} we denote the values ($i=1, \ldots, n$)
 \begin{equation*}
   \hat{\tilde\pi}_i = \tilde\pi_i(\hat{\bm\psi})
 \end{equation*}
-that is, the value of $\tilde\pi_i$, cf., Equation~\eqref{eq:clm-log-likelihood} evaluated at the ML estimates $\hat{\bm\psi}$. These are the values returned by the \code{fitted} and \code{fitted.values} extractor methods and stored in the \code{fitted.values} component of the model fit.
+that is, the value of $\tilde\pi_i$, cf., Equation~\ref{eq:clm-log-likelihood} evaluated at the ML estimates $\hat{\bm\psi}$. These are the values returned by the \code{fitted} and \code{fitted.values} extractor methods and stored in the \code{fitted.values} component of the model fit.
 
-The values of $\pi_{ij}$ (cf., Equation~\eqref{eq:multinom_pmf}) evaluated at the ML estimates of the parameters (i.e., $\hat\pi_{ij}$) can also be thought of as fitted values for the multinomially distributed variable $\bm Y_i^*$. These values can be obtained from the model fit by use of the \code{predict} method:
+The values of $\pi_{ij}$ (cf., Equation~\ref{eq:multinom_pmf}) evaluated at the ML estimates of the parameters (i.e., $\hat\pi_{ij}$) can also be thought of as fitted values for the multinomially distributed variable $\bm Y_i^*$. These values can be obtained from the model fit by use of the \code{predict} method:
 <<>>=
 head(pred <- predict(fm1, newdata = subset(wine, select = -rating))$fit)
 @
@@ -1470,7 +1374,7 @@ Note, however, that while the model parameters cannot be uniquely determined, th
 fm.comb3_b <- clm(rating_comb3 ~ 1, data=wine)
 anova(fm.comb3, fm.comb3_b)
 @
-The difference in log-likelihood is substantial, however, the criteria for the validity of the likelihood ratio test are not fulfilled, so the $p$ value should not be taken at face value.
+The difference in log-likelihood is substantial, however, the criteria for the validity of the likelihood ratio test are not fulfilled, so the $p$~value should not be taken at face value.
 
 The complete-separation issue may also appear in less obvious situations. If, for example we consider the following model allowing for nominal effects of \code{temp} the issue shows up:
 <<>>=
@@ -1632,11 +1536,11 @@ Thus the log-odds decrease linearly from 1.02 for the first two disease categori
 \section{Conclusions} \label{sec:conclusions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Cumulative link models is a very rich model class in between the perhaps the two most important model classes in statistics; linear models and logistic regression models. With the greater flexibility relative to binary logistic regression comes the option to check assumptions such as the partial proportional odds assumption. Non-linear structures such as scale effects arise naturally in a latent variable interpretation. In addition to nominal effects and the non-linear scale effects, the ordered nature of the thresholds gives rise to computational challanges which we have described and addressed in the \pkg{ordinal} package.
+Cumulative link models is a very rich model class in between, in a sense, the perhaps the two most important model classes in statistics; linear models and logistic regression models. The greater flexibility of CLMs relative to binary logistic regression models also facilitates to the ability to check assumptions such as the partial proportional odds assumption. Non-linear structures such as scale effects arise naturally in a latent variable interpretation. In addition to nominal effects and the non-linear scale effects, the ordered nature of the thresholds gives rise to computational challanges which we have described and addressed in the \pkg{ordinal} package.
 
-In addition to computational challenges, practical data analysis with CLMs can also be challanging. In our experience a top-down approach in which a ``full'' model is fitted and gradually simplified is often problematic, not only because this easily leads to unidentiable models but also because there are many different ways in which models can be reduced or expanded. A more pragmatic approach is often preferred; understanding the data through plots, tables, and even linear models can aid in finding a suitable intermediate ordinal starting model.
+In addition to computational challenges, practical data analysis with CLMs can also be challanging. In our experience a top-down approach in which a ``full'' model is fitted and gradually simplified is often problematic, not only because this easily leads to unidentifiable models but also because there are many different ways in which models can be reduced or expanded. A more pragmatic approach is often preferred; understanding the data through plots, tables, and even linear models can aid in finding a suitable intermediate ordinal starting model.
 
-Attempts to inditify a ``correct'' model will also often lead to frustrations; the greater the model framework, the greater the risk that there are multiple models which fit the data (almost) equally well. It is well known statistical wisdom that with enough data many goodness of fit tests become sensitive to even minor deviations of little practical relevance. This is particularly true for tests of partial proportional odds; in the author's experience almost all CLMs on real data show some evidence of non-proportional odds for one or more variables while the most useful representation of the data is a model that simply assumes proportional odds.
+Attempts to identify a ``correct'' model will also often lead to frustrations; the greater the model framework, the greater the risk that there are multiple models which fit the data (almost) equally well. It is well known statistical wisdom that with enough data many goodness of fit tests become sensitive to even minor deviations of little practical relevance. This is particularly true for tests of partial proportional odds; in the author's experience almost all CLMs on real data show some evidence of non-proportional odds for one or more variables while the most useful representation of the data is often a model that simply assumes proportional odds.
 
 
 %% -- Optional special unnumbered sections -------------------------------------
@@ -1664,7 +1568,6 @@ and all packages used are available from the Comprehensive
 % \section*{Acknowledgments}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% The author which to thank Professor Per Bruun Brockhoff many valuable discussions.
 
 % \begin{leftbar}
 %

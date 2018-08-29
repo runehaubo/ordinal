@@ -256,7 +256,9 @@ March 04 2010:
 - Reduce exec time for clmm examples
 - change rBind -> rbind
 
-2018-04-19.9005:
+2018-08-25:
 - Added sign.location and sign.nominal to clm.control()
 - Implemented type I, II and III type ANODE tables for clm fits
 - Implemented flexible link functions for clm()s
+- Added new article submitted to JSS as vignette and moved old vignettes to 
+  GitHub
