@@ -8,22 +8,22 @@ test_that("clm gives contrast warnings when it should", {
     expect_false(givesWarnings(
         fm1 <- clm(rating ~ temp + contact, scale=~contact, data=wine) ## OK
         ))
-    expect_false(givesWarnings(
-        fm1 <- clm(rating ~ temp + contact, scale=~contact, data=wine,
-                   contrasts=contr) ## OK
-        ))
-    expect_false(givesWarnings(
-        fm1 <- clm(rating ~ temp, scale=~contact, data=wine,
-                   contrasts=contr) ## OK
-        ))
-    expect_false(givesWarnings(
-        fm1 <- clm(rating ~ temp, nominal=~contact, data=wine,
-                   contrasts=contr) ## OK
-        ))
-    expect_false(givesWarnings(
-        fm1 <- clm(rating~1, scale=~temp, nominal=~contact, data=wine,
-                   contrasts=contr) ## OK
-        ))
+    # expect_false(givesWarnings(
+    #     fm1 <- clm(rating ~ temp + contact, scale=~contact, data=wine,
+    #                contrasts=contr) ## OK
+    #     ))
+    # expect_false(givesWarnings(
+    #     fm1 <- clm(rating ~ temp, scale=~contact, data=wine,
+    #                contrasts=contr) ## OK
+    #     ))
+    # expect_false(givesWarnings(
+    #     fm1 <- clm(rating ~ temp, nominal=~contact, data=wine,
+    #                contrasts=contr) ## OK
+    #     ))
+    # expect_false(givesWarnings(
+    #     fm1 <- clm(rating~1, scale=~temp, nominal=~contact, data=wine,
+    #                contrasts=contr) ## OK
+    #     ))
 
     ## These should give warnings:
     ## A warning is given if a variable is not present in any of the

@@ -1,8 +1,8 @@
 Package: ordinal
 Type: Package
 Title: Regression Models for Ordinal Data
-Version: 2018.8-25
-Date: 2018-08-25
+Version: 2019.3-9
+Date: 2019-03-09
 Authors@R: person(given="Rune Haubo Bojesen", family="Christensen",
     email="rune.haubo@gmail.com", role=c("aut", "cre"))
 LazyData: true
