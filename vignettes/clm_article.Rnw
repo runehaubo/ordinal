@@ -760,7 +760,7 @@ When a continuous variable is included among the nominal effects it is often hel
 Irrespective of the fitting algorithm, \pkg{ordinal} reports the following convergence codes for CLMs in which negative values indicate convergence failure:
 %
 \begin{description}
-  \item[-3] Not all thresholds are increasing. This is only possible with nominal effects and constitues and invalid fit.
+  \item[-3] Not all thresholds are increasing. This is only possible with nominal effects and constitutes an invalid fit.
   \item[-2] The Hessian has at least one negative eigenvalue. This means that the point at which the algorithm terminated does not represent an optimum.
   \item[-1] Absolute convergence criterion (maximum absolute gradient) was not satisfied. This means that the algorithm couldn't get close enough to a stationary point of the log-likelihood function.
   \item[0] Successful convergence.
