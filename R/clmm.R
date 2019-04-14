@@ -1,5 +1,5 @@
 #############################################################################
-#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#    Copyright (c) 2010-2019 Rune Haubo Bojesen Christensen
 #
 #    This file is part of the ordinal package for R (*ordinal*)
 #
@@ -141,9 +141,10 @@ clmm.formulae <- function(formula) {
         if(!is.null(env <- environment(form))) env
         else parent.frame(2)
     ## ensure 'formula' is a formula-object:
-    form <- try(formula(deparse(form), env = form.envir), silent=TRUE)
+    form <- tryCatch(formula(if(is.character(form)) form else deparse(form),
+                             env = form.envir), error = identity)
     ## report error if the formula cannot be interpreted
-    if(class(form) == "try-error")
+    if(inherits(form, "error"))
         stop("unable to interpret 'formula'")
     environment(form) <- form.envir
     ## Construct a formula with all (fixed and random) variables
@@ -217,7 +218,7 @@ getREterms <- function(frames, formula) {
 ### NOTE: make sure 'formula' is appropriately evaluated and returned
 ### by clmm.formulae
     if(!length(barlist)) stop("No random effects terms specified in formula")
-    term.names <- unlist(lapply(barlist, function(x) deparse(x)))
+    term.names <- unlist(lapply(barlist, deparse))
     names(barlist) <- unlist(lapply(barlist, function(x) deparse(x[[3]])))
 ### NOTE: Deliberately naming the barlist elements by grouping factors
 ### and not by r.e. terms.
