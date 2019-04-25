@@ -1,5 +1,5 @@
 #############################################################################
-#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#    Copyright (c) 2010-2019 Rune Haubo Bojesen Christensen
 #
 #    This file is part of the ordinal package for R (*ordinal*)
 #
@@ -194,20 +194,19 @@ get_clmFormulas <- function(mc, envir=parent.frame(2L))
     ## evaluate the formulae in the enviroment in which clm was called
     ## (parent.frame(2)) to get them evaluated properly:
     forms <- list(eval(mc$formula, envir=envir))
-    if(!is.null(mc$scale)) forms$scale <- eval(mc$scale, envir=envir)
+    if(!is.null(mc$scale))   forms$scale   <- eval(mc$scale,   envir=envir)
     if(!is.null(mc$nominal)) forms$nominal <- eval(mc$nominal, envir=envir)
     ## get the environment of the formula. If this does not have an
     ## enviroment (it could be a character), then use the parent frame.
     form.envir <-
         if(!is.null(env <- environment(forms[[1]]))) env else envir
     ## ensure formula, scale and nominal are formulas:
-    ## forms <- lapply(forms, function(x) {
-    ##   try(formula(deparse(x), env = form.envir), silent=TRUE) })
-    for(i in 1:length(forms)) {
-        forms[[i]] <- try(formula(deparse(forms[[i]]),
-                                  env = form.envir), silent=TRUE)
-    }
-    if(any(sapply(forms, function(f) class(f) == "try-error")))
+    forms[] <- lapply(forms, function(x) { # 'is.character(.)' for scale = "~ ..."
+        tryCatch(formula(if(is.character(x)) x else deparse(x),
+                         env = form.envir),
+                 error = function(e)e)
+    })
+    if(any(vapply(forms, inherits, FUN.VALUE=logical(1), what="error")))
         stop("unable to interpret 'formula', 'scale' or 'nominal'")
     ## collect all variables in a full formula:
     forms$fullForm <- do.call("getFullForm", forms)
