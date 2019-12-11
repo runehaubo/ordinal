@@ -137,7 +137,7 @@ summary(c4a)
 
 tC1 <- try(clm(ordered(SURENESS)~PROD, scale = ~PROD, data=soup,
                na.action=na.fail), silent = TRUE)
-stopifnot(class(tC1) == "try-error")
+stopifnot(inherits(tC1, "try-error"))
 
 c4a <- clm(ordered(SURENESS)~PROD, scale = ~PROD, data=soup,
            na.action=na.exclude)
@@ -145,7 +145,7 @@ summary(c4a)
 
 tC2 <- try(clm(ordered(SURENESS)~PROD, scale = ~PROD, data=soup,
                 na.action=na.pass), silent = TRUE)
-stopifnot(class(tC2) == "try-error")
+stopifnot(inherits(tC2, "try-error"))
 
 ## Subset:
 data(soup, package="ordinal")

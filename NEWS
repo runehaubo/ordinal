@@ -269,3 +269,6 @@ March 04 2010:
 2019-04-25:
 - Change in formula evaluation in base R prompts this update - very kindly 
   fixed by Martin Maechler (R core) in PR#18 
+
+2019-12-11:
+- Get rid of S3 class checks with class() - now using inherits() instead.

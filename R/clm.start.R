@@ -42,7 +42,7 @@ set.start <-
       ## increased gradTol and relTol:
       fit <- try(clm.fit.NR(rho, control=list(gradTol=1e-3, relTol=1e-3)),
                  silent=TRUE)
-      if(class(fit) == "try-error")
+      if(inherits(fit, "try-error"))
         stop("Failed to find suitable starting values: please supply some",
              call.=FALSE)
       start <- c(fit$par, rep(0, NCOL(frames$S) - 1))

@@ -139,7 +139,7 @@ summary.clmm <- function(object, correlation = FALSE, ...)
                    c("Estimate", "Std. Error", "z value", "Pr(>|z|)")))
   coef[, 1] <- object$coefficients[1:nfepar]
   vc <- try(vcov(object), silent = TRUE)
-  if(class(vc) == "try-error") {
+  if(inherits(vc, "try-error")) {
     warning("Variance-covariance matrix of the parameters is not defined")
     coef[, 2:4] <- NaN
     if(correlation) warning("Correlation matrix is unavailable")
