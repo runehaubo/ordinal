@@ -77,7 +77,7 @@ ggumbel(x, max = TRUE)
   \code{rgumbel} generates random deviates.
 }
 \references{
-  \url{wikipedia.org/wiki/Gumbel_distribution}
+  \url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 }
 \seealso{
   Gradients of densities are also implemented for the normal, logistic, 
