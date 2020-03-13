@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## The predict method for clm objects.
 
@@ -7,7 +26,7 @@ predict.clm <-
            type = c("prob", "class", "cum.prob", "linear.predictor"),
            na.action = na.pass, ...)
 ### result - a list of predictions (fit)
-### FIXME: restore names of the fitted values
+### OPTION: restore names of the fitted values
 ###
 ### Assumes object has terms, xlevels, contrasts, tJac
 {
@@ -66,6 +85,7 @@ predict.clm <-
         Xint <- match("(Intercept)", colnames(X), nomatch = 0L)
         n <- nrow(X)
         if(Xint <= 0) X <- cbind("(Intercept)" = rep(1, n), X)
+        # if(object$control$sign.location == "negative") NOM[, -1] <- -NOM[, -1]
         ## drop aliased columns:
         if(sum(object$aliased$beta) > 0)
             X <- X[, !c(FALSE, object$aliased$beta), drop=FALSE]
@@ -95,6 +115,7 @@ predict.clm <-
                                 contrasts=object$nom.contrasts)
             NOMint <- match("(Intercept)", colnames(NOM), nomatch = 0L)
             if(NOMint <= 0) NOM <- cbind("(Intercept)" = rep(1, n), NOM)
+            # if(object$control$sign.nominal == "negative") NOM[, -1] <- -NOM[, -1]
             alias <- t(matrix(object$aliased$alpha,
                               nrow=length(object$y.levels) - 1))[,1]
             if(sum(alias) > 0)
@@ -130,7 +151,7 @@ predict.clm <-
                           S=if(is.scale) S else NULL,
                           weights=rep(1, n), offset=offset,
                           S.offset=if(is.scale) Soff else rep(0, n),
-                          tJac=tJac)
+                          tJac=tJac, control=object$control)
         setLinks(env, link=object$link)
     } ## end !missing(newdata) or type == "class"
     else {
@@ -139,7 +160,7 @@ predict.clm <-
     }
     env$par <- as.vector(coef(object))
     env$par <- env$par[!is.na(env$par)]
-### FIXME: better way to handle NAs in coef?
+### OPTION: Are there better ways to handle NAs in coef?
     ## if(length(env$par) != ncol(env$B1))
     ##   stop(gettextf("design matrix has %d columns, but expecting %d (number of parameters)",
     ##                 ncol(env$B1), length(env$par)))
@@ -282,7 +303,8 @@ get.se <- function(rho, cov, type=c("lp", "gamma", "prob")) {
         ## colSums(tcrossprod(chol.cov, x)^2)
     }
     rho$type <- match.arg(type)
-    rho$chol.cov <- try(chol(cov), silent=TRUE)
+    ind <- seq_len(rho$n.psi + rho$k)
+    rho$chol.cov <- try(chol(cov[ind, ind]), silent=TRUE)
     if(inherits(rho$chol.cov, "try-error"))
         stop(gettext("VarCov matrix of model parameters is not positive definite:\n cannot compute standard errors of predictions"),
              call.=FALSE)
@@ -299,19 +321,21 @@ get.se <- function(rho, cov, type=c("lp", "gamma", "prob")) {
                 D2 <- cbind(D2/sigma, -S*eta2)
             }
             if(type == "gamma") {
-                D1 <- D1*dfun(eta1)
-                D2 <- D2*dfun(eta2)
+              p1 <- if(!nlambda) dfun(eta1) else dfun(eta1, lambda)
+              p2 <- if(!nlambda) dfun(eta2) else dfun(eta2, lambda)
+              D1 <- D1*p1
+              D2 <- D2*p2
             }
             se <- list(se1=sqrt(xcovtx(D1, chol.cov)),
                        se2=sqrt(xcovtx(D2, chol.cov)))
         }
         if(type == "prob") {
-            p1 <- dfun(eta1)
-            p2 <- dfun(eta2)
-            C2 <- if(k <= 0) B1*p1 - B2*p2 else
+          p1 <- if(!nlambda) dfun(eta1) else dfun(eta1, lambda)
+          p2 <- if(!nlambda) dfun(eta2) else dfun(eta2, lambda)
+          C2 <- if(k <= 0) B1*p1 - B2*p2 else
             cbind(B1*p1/sigma - B2*p2/sigma,
                   -(eta1 * p1 - eta2 * p2) * S)
-            se <- sqrt(xcovtx(C2, chol.cov))
+          se <- sqrt(xcovtx(C2, chol.cov))
         }
     })
     rho$se

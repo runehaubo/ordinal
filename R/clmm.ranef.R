@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Implementation of ranef and condVar methods for clmm objects to
 ## extract the conditional model of the random-effects and their
@@ -5,8 +24,7 @@
 
 ## fixef.clmm <- function(object, ...)  coef(object, ...)
 ## object$coefficients
-### FIXME: This function needs to change such that a *named* vector is
-### returned.
+### NOTE: Should return a *named* vector
 
 ranef <- function(object, ...) UseMethod("ranef")
 ## fixef <- function(object, ...) UseMethod("fixef")
@@ -47,7 +65,7 @@ ranef.clmm <- function(object, condVar=FALSE, ...)
     ranefList <- formatRanef(relist, object$ST, gflevs, asgn,
                              object$dims$qi)
     if(condVar) {
-### FIXME: Should we return matrices for vector-valued random effects
+### OPTION: Should we return matrices for vector-valued random effects
 ### as lmer does?
         ## Add conditional variances of the random effects:
         cond.var <- object$condVar

@@ -1,24 +1,45 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## profile and confint methods for clm objects.
 
-profile.clm <-
-  function(fitted, which.beta = seq_len(nbeta),
-           which.zeta = seq_len(nzeta), alpha = 0.001,
-           max.steps = 50, nsteps = 8, trace = FALSE,
-           step.warn = 5, control = list(), ...)
-### match and tests arguments and dispatch to .zeta and .beta
-### functions for the actual profiling.
-
-### which.[beta, zeta] - numeric or character vectors.
-
-### Works for models with nominal and scale effects and for any number
-### of aliased coefs.
+profile.clm <- function(fitted, which.beta = seq_len(nbeta),
+                        which.zeta = seq_len(nzeta), alpha = 0.001,
+                        max.steps = 50, nsteps = 8, trace = FALSE,
+                        step.warn = 5, control = list(), ...)
 {
+  ### match and tests arguments and dispatch to .zeta and .beta
+  ### functions for the actual profiling.
+  
+  ### which.[beta, zeta] - numeric or character vectors.
+  
+  ### Works for models with nominal and scale effects and for any number
+  ### of aliased coefs.
+  
   ## match and test arguments:
-    if(any(is.na(diag(vcov(fitted)))))
-        stop("Cannot get profile when vcov(fitted) contains NAs", call.=FALSE)
+  if(fitted$link %in% c("Aranda-Ordaz", "log-gamma"))
+    stop("Profiling not implemented for models with flexible link function")
+  if(any(is.na(diag(vcov(fitted)))))
+    stop("Cannot get profile when vcov(fitted) contains NAs", call.=FALSE)
   stopifnot(is.numeric(alpha) && length(alpha) == 1 &&
-            alpha > 0 && alpha < 1)
+              alpha > 0 && alpha < 1)
   stopifnot(round(max.steps) > round(nsteps))
   stopifnot(round(nsteps) > round(step.warn))
   stopifnot(round(nsteps) > 0 && round(step.warn) >= 0)
@@ -73,6 +94,9 @@ profile.clm.beta <-
         names(zeta) <- paste("sca", names(fitted$zeta), sep=".")
         orig.par <- c(orig.par, zeta)
     }
+    if(!is.null(lambda <- fitted$lambda)) {
+      orig.par <- c(orig.par, lambda)
+    }
 ### NOTE: we need to update zeta.names to make names(orig.par)
 ### unique. This is needed to correctly construct the resulting
 ### par.vals matrix and to extract from it again.
@@ -90,6 +114,7 @@ profile.clm.beta <-
     ## X <- with(mf, X[wts > 0, , drop=FALSE]) ## containing alias cols
     wts <- getWeights(model.frame(fitted))
     X <- model.matrix(fitted)$X[wts > 0, , drop=FALSE]
+    if(fitted$control$sign.location == "positive") X <- -X
     rho <- get_clmRho(fitted)
     ## rho <- update(fitted, doFit = FALSE)
     orig <- as.list(rho)[c("B1", "B2", "o1", "o2")]
@@ -247,7 +272,7 @@ profile.clm.zeta <-
     ## order lroot and par values and collect in a data.frame:
     ## lroot.order <- order(lroot.wz, decreasing = TRUE)
     lroot.order <- order(par.wz[, wz.name], decreasing = FALSE)
-### FIXME: Need to change how values are ordered here. We should order
+### NOTE: Need to change how values are ordered here. We should order
 ### with par.wz[, wz.name] instead of lroot.wz since if lroot.wz is
 ### flat, the order may be incorrect.
     prof.list[[wz.name]] <-
@@ -385,6 +410,11 @@ confint.clm <-
 {
   ## match and test arguments
   type <- match.arg(type)
+  if(object$link %in% c("Aranda-Ordaz", "log-gamma") && type == "profile") {
+    message(paste("Profile intervals not available for models with flexible",
+            "link function:\n reporting Wald intervals instead"))
+    type <- "Wald"
+  }
   stopifnot(is.numeric(level) && length(level) == 1 &&
             level > 0 && level < 1)
   trace <- as.logical(trace)[1]

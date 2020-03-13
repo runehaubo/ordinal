@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Functions to fit/estimate CLMs (clm.fit.NR, clm.fit.optim) and
 ## functions implementing the negative log-likelihood, its gradient
@@ -54,7 +73,7 @@ clm.fit.NR <-
 ### compute step for negative-definite Hessians and we don't want
 ### that.
 
-### FIXME: What if Hessian is closely singular but slightly positive?
+### OPTION: What if Hessian is closely singular but slightly positive?
 ### Could we do something better in that case?
         if(inherits(ch, "try-error")) {
             if(abs.conv) { ## step.ok not true.
@@ -222,7 +241,7 @@ clm.fit.optim <-
              function(par) clm.nll(rho, par),
              function(par) clm.grad_direct(rho, par),
              method="BFGS",
-             control=control),
+             control=control)
            )
   ## save results:
   rho$par <- optRes[[1]]
@@ -244,23 +263,63 @@ clm.fit.optim <-
   return(res)
 }
 
+clm.fit.flex <- function(rho, control=list()) {
+  lwr <- if(rho$link == "Aranda-Ordaz") 
+    c(rep(-Inf, length(rho$par) - 1), 1e-5) else rep(-Inf, length(rho$par))
+  ## optimize the likelihood:
+  optRes <- nlminb(rho$par, function(par, rho) clm.nll.flex(rho, par), 
+                   lower=lwr, rho=rho)
+  ## save results:
+  rho$par <- optRes$par
+  res <- list(par = rho$par,
+              lambda = setNames(rho$par[length(rho$par)], "lambda"),
+              logLik = -clm.nll.flex(rho),
+              gradient = numDeriv::grad(func=function(par, rho) clm.nll.flex(rho, par), 
+                                        x = rho$par, rho=rho),
+              Hessian = numDeriv::hessian(func=function(par, rho) clm.nll.flex(rho, par), 
+                                          x = rho$par, rho=rho),
+              fitted = rho$fitted)
+  res$maxGradient = max(abs(res$gradient))
+  res$optRes <- optRes
+  res$niter <- optRes$evaluations
+  res$convergence <- optRes$convergence
+  return(res)
+}
+
+clm.nll.flex <- function(rho, par) {
+  if(!missing(par)) rho$par <- par
+  with(rho, {
+    if(k > 0)
+      sigma <- Soff * exp(drop(S %*% par[n.psi + 1:k]))
+    ### NOTE: we have to divide by sigma even if k=0 since there may be an
+    ### offset but no predictors in the scale model:
+    eta1 <- (drop(B1 %*% par[1:n.psi]) + o1)/sigma
+    eta2 <- (drop(B2 %*% par[1:n.psi]) + o2)/sigma
+    fitted <- pfun(eta1, par[length(par)]) - pfun(eta2, par[length(par)])
+  })
+  if(all(is.finite(rho$fitted)) && all(rho$fitted > 0))
+    ### NOTE: Need test here because some fitted <= 0 if thresholds are
+    ### not ordered increasingly.
+    -sum(rho$wts * log(rho$fitted))
+  else Inf
+}
 
 clm.nll <- function(rho, par) {
   if(!missing(par)) rho$par <- par
   with(rho, {
-      if(k > 0)
+    if(k > 0)
       sigma <- Soff * exp(drop(S %*% par[n.psi + 1:k]))
-### NOTE: we have to divide by sigma even if k=0 since there may be an
-### offset but no predictors in the scale model:
+    ### NOTE: we have to divide by sigma even if k=0 since there may be an
+    ### offset but no predictors in the scale model:
     eta1 <- (drop(B1 %*% par[1:n.psi]) + o1)/sigma
     eta2 <- (drop(B2 %*% par[1:n.psi]) + o2)/sigma
   })
-### NOTE: getFitted is not found from within rho, so we have to
-### evalueate it outside of rho
-  rho$fitted <- getFittedC(rho$eta1, rho$eta2, rho$link)
+  ### NOTE: getFitted is not found from within rho, so we have to
+  ### evalueate it outside of rho
+  rho$fitted <- getFittedC(rho$eta1, rho$eta2, rho$link, rho$par[length(rho$par)])
   if(all(is.finite(rho$fitted)) && all(rho$fitted > 0))
-### NOTE: Need test here because some fitted <= 0 if thresholds are
-### not ordered increasingly.
+    ### NOTE: Need test here because some fitted <= 0 if thresholds are
+    ### not ordered increasingly.
     -sum(rho$wts * log(rho$fitted))
   else Inf
 }
@@ -300,8 +359,8 @@ clm.grad <- function(rho) {
 ### requires that clm.nll has been called prior to
 ### clm.grad.
   with(rho, {
-    p1 <- dfun(eta1)
-    p2 <- dfun(eta2)
+    p1 <- if(!nlambda) dfun(eta1) else dfun(eta1, lambda)
+    p2 <- if(!nlambda) dfun(eta2) else dfun(eta2, lambda)
     wtpr <- wts/fitted
     C2 <- B1*p1/sigma - B2*p2/sigma
     if(k <= 0) return(-crossprod(C2, wtpr))
@@ -331,30 +390,30 @@ clm.grad_direct <- function(rho, par) {
 ## }
 
 clm.hess <- function(rho) {
-### requires that clm.grad has been called prior to this.
-    with(rho, {
-        g1 <- gfun(eta1)
-        g2 <- gfun(eta2)
-        wtprpr <- wtpr/fitted ## Phi3
-        dg.psi <- crossprod(B1 * gfun(eta1) * wtpr / sigma^2, B1) -
-            crossprod(B2 * gfun(eta2) * wtpr / sigma^2, B2)
-        ## upper left:
-        D <- dg.psi - crossprod(C2, (C2 * wtprpr))
-        if(k <= 0) return(-D) ## no scale predictors
-        ## upper right (lower left transpose):
-        wtprsig <- wtpr/sigma
-        epg1 <- p1 + g1*eta1
-        epg2 <- p2 + g2*eta2
-        Et <- crossprod(B1, -wtprsig * epg1 * S) -
-            crossprod(B2, -wtprsig * epg2 * S) -
-                crossprod(C2, wtprpr * C3)
-        ## lower right:
-        F <- -crossprod(S, wtpr * ((eta1*p1 - eta2*p2)^2 / fitted -
-                                   (eta1*epg1 - eta2*epg2)) * S)
-        ## combine and return hessian:
-        H <- rbind(cbind(D    , Et),
-                   cbind(t(Et), F))
-        return(-H)
-    })
+  ### requires that clm.grad has been called prior to this.
+  with(rho, {
+    g1 <- if(!nlambda) gfun(eta1) else gfun(eta1, lambda)
+    g2 <- if(!nlambda) gfun(eta2) else gfun(eta2, lambda)
+    wtprpr <- wtpr/fitted ## Phi3
+    dg.psi <- crossprod(B1 * g1 * wtpr / sigma^2, B1) -
+      crossprod(B2 * g2 * wtpr / sigma^2, B2)
+    ## upper left:
+    D <- dg.psi - crossprod(C2, (C2 * wtprpr))
+    if(k <= 0) return(-D) ## no scale predictors
+    ## upper right (lower left transpose):
+    wtprsig <- wtpr/sigma
+    epg1 <- p1 + g1*eta1
+    epg2 <- p2 + g2*eta2
+    Et <- crossprod(B1, -wtprsig * epg1 * S) -
+      crossprod(B2, -wtprsig * epg2 * S) -
+      crossprod(C2, wtprpr * C3)
+    ## lower right:
+    F <- -crossprod(S, wtpr * ((eta1*p1 - eta2*p2)^2 / fitted -
+                                 (eta1*epg1 - eta2*epg2)) * S)
+    ## combine and return hessian:
+    H <- rbind(cbind(D    , Et),
+               cbind(t(Et), F))
+    return(-H)
+  })
 }
 

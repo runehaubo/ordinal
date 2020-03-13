@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2019 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Implementation of Cumulative Link Mixed Models in clmm().
 
@@ -15,7 +34,7 @@ clmm <-
 {
 ### Extract the matched call and initial testing:
   mc <- match.call(expand.dots = FALSE)
-### FIXME: Possibly call clm() when there are no random effects?
+### OPTION: Possibly call clm() when there are no random effects?
   link <- match.arg(link)
   threshold <- match.arg(threshold)
   if(missing(formula))  stop("Model needs a formula")
@@ -26,7 +45,7 @@ clmm <-
   formulae <- clmm.formulae(formula=formula)
   ## mf, y, X, wts, off, terms:
   frames <- clmm.frames(modelcall=mc, formulae=formulae, contrasts)
-### FIXME: What should 'method="model.frame"' return? Do we want Zt
+### QUEST: What should 'method="model.frame"' return? Do we want Zt
 ### included here as well?
   if(control$method == "model.frame") return(frames)
   ## Test rank deficiency and possibly drop some parameters:
@@ -44,7 +63,7 @@ clmm <-
   ## For each r.e. term, test if Z has more columns than rows to detect
   ## unidentifiability:
   test_no_ranef(Zt_list=retrms$retrms, frames=frames, checkRanef=control$checkRanef)
-### FIXME: save (the evaluated) formula in frames, so we only need the
+### OPTION: save (the evaluated) formula in frames, so we only need the
 ### frames argument to getREterms() ?
   use.ssr <- (retrms$ssr && !control$useMatrix)
 
@@ -80,7 +99,7 @@ clmm <-
           rho$ST <- par2ST(as.vector(start[[2]]), rho$ST)
       }
   }
-### FIXME: set starting values in a more elegant way.
+### OPTION: set starting values in a more elegant way.
 
   ## Set AGQ parameters:
   set.AGQ(rho, nAGQ, control, use.ssr)
@@ -122,9 +141,10 @@ clmm.formulae <- function(formula) {
         if(!is.null(env <- environment(form))) env
         else parent.frame(2)
     ## ensure 'formula' is a formula-object:
-    form <- try(formula(deparse(form), env = form.envir), silent=TRUE)
+    form <- tryCatch(formula(if(is.character(form)) form else deparse(form),
+                             env = form.envir), error = identity)
     ## report error if the formula cannot be interpreted
-    if(class(form) == "try-error")
+    if(inherits(form, "error"))
         stop("unable to interpret 'formula'")
     environment(form) <- form.envir
     ## Construct a formula with all (fixed and random) variables
@@ -149,7 +169,7 @@ clmm.frames <- function(modelcall, formulae, contrasts) {
     fixedmf <- mf ## save call for later modification and evaluation
     fullmf <- eval(mf, envir = parent.frame(2)) ## '2' to get out of
     ## clmm.frames and clmm
-### FIXME: What if data is a matrix?
+### OPTION: Consider behavior if data is a matrix?
     fixedmf$formula <- formulae$fixedForm
     fixedmf <- eval(fixedmf, envir = parent.frame(2))
     attr(fullmf, "terms") <- attr(fixedmf, "terms")
@@ -193,14 +213,12 @@ getZt <- function(retrms) {
 getREterms <- function(frames, formula) {
 ### NOTE: Need to parse mf - not just fullmf because we need the model
 ### fits for an identifiability check below.
-    ## fullmf <- frames$mf
-### FIXME: Should we have
     fullmf <- droplevels(with(frames, mf[wts > 0, ]))
     barlist <- expandSlash(findbars(formula[[3]]))
-### FIXME: make sure 'formula' is appropriately evaluated and returned
+### NOTE: make sure 'formula' is appropriately evaluated and returned
 ### by clmm.formulae
     if(!length(barlist)) stop("No random effects terms specified in formula")
-    term.names <- unlist(lapply(barlist, function(x) deparse(x)))
+    term.names <- unlist(lapply(barlist, deparse))
     names(barlist) <- unlist(lapply(barlist, function(x) deparse(x[[3]])))
 ### NOTE: Deliberately naming the barlist elements by grouping factors
 ### and not by r.e. terms.
@@ -216,15 +234,15 @@ getREterms <- function(frames, formula) {
         Zt = do.call(rbind, lapply(seq_len(ncol(mm)), function(j) {
             Zti@x <- mm[,j]
             Zti } ))
-### FIXME: can we drop rows from Zt when g has missing values in terms
+### QUEST: can we drop rows from Zt when g has missing values in terms
 ### of the form (1 + g | f)?
         ST <- matrix(0, ncol(mm), ncol(mm),
                      dimnames = list(colnames(mm), colnames(mm)))
         list(f = ff, Zt = Zt, ST = ST)
-### FIXME: return the i'th element of Lambda here.
+### OPTION: return the i'th element of Lambda here.
     })
     q <- sum(sapply(rel, function(x) nrow(x$Zt)))
-### FIXME: If the model is nested (all gr.factors are nested), then
+### OPTION: If the model is nested (all gr.factors are nested), then
 ### order the columns of Zt, such that they come in blocks
 ### corresponding to the levels of the coarsest grouping factor. Each
 ### block of Zt-columns contain first the j'th level of the 1st gr.fac.
@@ -303,10 +321,10 @@ test_no_ranef <-
     ### NOTE: if all(frames$wts == 1) we cannot have observation-level
     ### random effects so we error if nrow(Zti) >= ncol(Zti)
     ###
-    ### FIXME: Could probably also throw an error if q >= sum(frames$wts),
+    ### NOTE: Could probably also throw an error if q >= sum(frames$wts),
     ### but I am not sure about that.
     ###
-    ### FIXME: It would be better to test the rank of the Zt matrix, but
+    ### NOTE: It would be better to test the rank of the Zt matrix, but
     ### also computationally more intensive.
     ###
 }
@@ -333,7 +351,7 @@ getDims <- function(frames, ths, retrms)
 rho.clm2clmm <- function(rho, retrms, ctrl)
 ### update environment, rho returned by clm.newRho().
 {
-### FIXME: write default list of control arguments?
+### OPTION: write default list of control arguments?
     ## control arguments are used when calling update.u(rho)
     rho$ctrl = ctrl
     ## compute Zt design matrix:
@@ -615,13 +633,13 @@ clmm.fit.env <-
     ## Fit the model with Laplace:
     fit <- try(nlminb(getPar.clmm(rho), function(par) getNLA(rho, par),
                       lower=lwr, control=control), silent=TRUE)
-### FIXME: Make it possible to use the ucminf optimizer with
+### OPTION: Make it possible to use the ucminf optimizer with
 ### log-transformed std-par instead.
 
     ## Check if optimizer converged without error:
     if(inherits(fit, "try-error"))
         stop("optimizer ", method, " failed to converge", call.=FALSE)
-### FIXME: Could have an argument c(warn, fail, ignore) to optionally
+### OPTION: Could have an argument c(warn, fail, ignore) to optionally
 ### return the fitted model despite the optimizer failing.
 
     ## Ensure parameters in rho are set at the optimum:
@@ -636,7 +654,7 @@ clmm.fit.env <-
                 ST = rho$ST,
                 logLik = -fit$objective,
                 dims = rho$dims,
-### FIXME: Should we evaluate hess.u(rho) to make sure rho$L contains
+### OPTION: Should we evaluate hess.u(rho) to make sure rho$L contains
 ### the right values corresponding to the optimum?
                 u = rho$u,
                 optRes = fit,
@@ -671,7 +689,7 @@ clmm.fit.env <-
         res$gradient <- grad.ctr(function(par) getNLA(rho, par, which=!bound),
                                  x=optpar)
     }
-### FIXME: We should check that the (forward) gradient for variances at the
+### OPTION: We could check that the (forward) gradient for variances at the
 ### boundary are not < -1e-5 (wrt. -logLik/nll/getNLA)
     ## Setting Niter and neval after gradient and Hessian evaluations:
     res$Niter <- rho$Niter
@@ -754,7 +772,7 @@ clmm.finalize <-
     fit$contrasts <- attr(frames$X, "contrasts")
     fit$na.action <- attr(frames$mf, "na.action")
     fit$terms <- frames$terms
-### FIXME: Should the terms object contain only the fixed effects
+### QUEST: Should the terms object contain only the fixed effects
 ### terms?
     fit$xlevels <- .getXlevels(frames$terms, frames$mf)
     fit$y.levels <- levels(frames$y)
@@ -765,8 +783,6 @@ clmm.finalize <-
         alpha <- coefficients[1:dims$nalpha]
         beta <- if(dims$nbeta > 0)
             coefficients[dims$nalpha + 1:dims$nbeta] else numeric(0)
-### QUESTION: How does lmerTest get the Hessian of varcov-parameters
-### when some are at the boundary?
         ## set various fit elements:
         edf <- dims$edf <- dims$nfepar + dims$nSTpar
         dims$nobs <- sum(frames$wts)

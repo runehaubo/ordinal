@@ -52,4 +52,4 @@ anova(m1, update(m1, scale = ~.-PROD))
 mT1 <- update(m1, threshold = "symmetric")
 
 }
-\keyword{models}
+\keyword{internal}

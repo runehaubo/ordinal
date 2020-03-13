@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## An alternate (and older) implementation of CLMs in clm2(). The new
 ## and recommended implementation is available in clm(), cf. ./R/clm.R
@@ -32,7 +51,7 @@ clm2.control <-
 
 newRho <- function(parent, XX, X, Z, y, weights, Loffset, Soffset, ## OK
                    link, lambda, theta, threshold, Hess, control)
-### FIXME: Could remove theta argument?
+### OPTION: Could we remove the theta argument?
 {
     rho <- new.env(parent = parent)
     rho$X <- X
@@ -673,7 +692,8 @@ clm2 <- ## OK
         rho$limitLow <- c(rep(-Inf, length(rho$par)-1), 1e-5)
     if(length(rho$start) != with(rho, nxi + p + k + estimLambda))
         stop("'start' is not of the correct length")
-### FIXME: Better check of increasing thresholds when ncol(XX) > 0
+### OPTION: Could consider better check of increasing thresholds when 
+### ncol(XX) > 0
     if(ncol(XX) == 0) {
         if(!all(diff(c(rho$tJac %*% rho$start[1:rho$nalpha])) > 0))
             stop("Threshold starting values are not of increasing size")
@@ -767,7 +787,7 @@ summary.clm2 <- function(object, digits = max(3, .Options$digits - 3),
                    c("Estimate", "Std. Error", "z value", "Pr(>|z|)")))
   coef[, 1] <- object$coefficients
   vc <- try(vcov(object), silent = TRUE)
-  if(class(vc) == "try-error") {
+  if(inherits(vc, "try-error")) {
     warning("Variance-covariance matrix of the parameters is not defined")
     coef[, 2:4] <- NaN
     if(correlation) warning("Correlation matrix is unavailable")

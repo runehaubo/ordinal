@@ -1,7 +1,26 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Utility functions for fitting CLMMs with clmm2().
 
-### FIXME: Could make use of getFittedC throughout this file...
+### OPTION: Could make use of getFittedC throughout this file...
 
 .negLogLikMfastR <- function(rho) { ## negative log-likelihood
 ### .negLogLikMfast in R
@@ -380,10 +399,9 @@ getNAGQ2 <- function(rho, par) {
             PRnn <- exp(weights * log(pfun(eta1Tmp) - pfun(eta2Tmp)))
         for(i in 1:r)
             ## PRrn[i,] <- apply(PRnn[grFac == i, ], 2, prod)
-### FIXME: Should this be: ???
             PRrn[i,] <- apply(PRnn[grFac == i, ,drop = FALSE], 2, prod)
         PRrn <- PRrn * agqws * dnorm(x=agqns, mean=0, sd=1)
-### FIXME: Could this be optimized by essentially computing dnorm 'by hand'?
+### OPTION: Could this be optimized by essentially computing dnorm 'by hand'?
     })
     -sum(log(rowSums(rho$PRrn)))
 }

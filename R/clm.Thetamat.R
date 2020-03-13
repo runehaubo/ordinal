@@ -1,9 +1,28 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Functions (getThetamat) to compute a table of threshold
 ## coefficients from model fits (clm()s) with nominal effects.
 
 getThetamat <-
-  function(terms, alpha, assign, contrasts, tJac, xlevels)
+  function(terms, alpha, assign, contrasts, tJac, xlevels, sign.nominal)
 ### Compute matrix of thresholds for all combinations of levels of
 ### factors in the nominal formula.
 ###
@@ -15,6 +34,7 @@ getThetamat <-
 ### contrasts: list of contrasts for the nominal effects
 ### tJac: threshold Jacobian with appropriate dimnames.
 ### xlevels: names of levels of factors among the nominal effects.
+### sign.nominal: "positive" or "negative"
 ###
 ### Output:
 ### Theta: data.frame of thresholds
@@ -69,6 +89,7 @@ getThetamat <-
 ### fail:
         if(!"(Intercept)" %in% colnames(X))
             X <- cbind("(Intercept)" = rep(1, nrow(X)), X)
+        if(sign.nominal == "negative") X[, -1] <- -X[, -1]
 ### NOTE: There are no contrasts for numerical variables, but there
 ### may be for ordered factors.
         ## From threshold parameters to thresholds:

@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2019 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## methods for computing, manipulating and extracting design matrices,
 ## weights, offsets, model.frames and things like that.
@@ -175,24 +194,23 @@ get_clmFormulas <- function(mc, envir=parent.frame(2L))
     ## evaluate the formulae in the enviroment in which clm was called
     ## (parent.frame(2)) to get them evaluated properly:
     forms <- list(eval(mc$formula, envir=envir))
-    if(!is.null(mc$scale)) forms$scale <- eval(mc$scale, envir=envir)
+    if(!is.null(mc$scale))   forms$scale   <- eval(mc$scale,   envir=envir)
     if(!is.null(mc$nominal)) forms$nominal <- eval(mc$nominal, envir=envir)
     ## get the environment of the formula. If this does not have an
     ## enviroment (it could be a character), then use the parent frame.
     form.envir <-
         if(!is.null(env <- environment(forms[[1]]))) env else envir
     ## ensure formula, scale and nominal are formulas:
-    ## forms <- lapply(forms, function(x) {
-    ##   try(formula(deparse(x), env = form.envir), silent=TRUE) })
-    for(i in 1:length(forms)) {
-        forms[[i]] <- try(formula(deparse(forms[[i]]),
-                                  env = form.envir), silent=TRUE)
-    }
-    if(any(sapply(forms, function(f) class(f) == "try-error")))
+    forms[] <- lapply(forms, function(x) { # 'is.character(.)' for scale = "~ ..."
+        tryCatch(formula(if(is.character(x)) x else deparse(x),
+                         env = form.envir),
+                 error = function(e)e)
+    })
+    if(any(vapply(forms, inherits, FUN.VALUE=logical(1), what="error")))
         stop("unable to interpret 'formula', 'scale' or 'nominal'")
     ## collect all variables in a full formula:
     forms$fullForm <- do.call("getFullForm", forms)
-### FIXME: do we really need to set this name?
+### OPTION: do we actually need to set this name?
     names(forms)[1] <- "formula"
     ## set environment of 'fullForm' to the environment of 'formula':
     attr(forms, "envir") <- environment(forms$fullForm) <- form.envir
@@ -207,7 +225,7 @@ get_clmRho <- function(object, ...) {
 
 get_clmRho.default <-
     function(object, terms.list, contrasts, link, threshold,
-             parent=parent.frame(), start=NULL, ...)
+             parent=parent.frame(), start=NULL, control=clm.control(), ...)
 ### .default method(?)
 ### object: model.frame (fullmf) with all variables present
 ### terms.list: list of terms.objects for each of the formulas in the
@@ -225,7 +243,7 @@ get_clmRho.default <-
     rho <- with(design, {
         clm.newRho(parent.frame(), y=y, X=X, NOM=design$NOM, S=design$S,
                    weights=weights, offset=offset, S.offset=design$S.off,
-                   tJac=tJac)
+                   tJac=tJac, control=control)
     })
     ## Set and check starting values for the parameters:
     start <- set.start(rho, start=start, get.start=is.null(start),
@@ -244,7 +262,8 @@ get_clmRho.clm <-
     get_clmRho.default(object=model.frame(o),
                        terms.list=terms(o, "all"),
                        contrasts=o$contrasts, start=c(o$start), link=o$link,
-                       threshold=o$threshold, parent=parent, ...)
+                       threshold=o$threshold, parent=parent, control=o$control, 
+                       ...)
 }
 
 ## get_mfcall <- function(mc, envir=parent.frame(2)) {

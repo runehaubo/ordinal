@@ -1,3 +1,22 @@
+/////////////////////////////////////////////////////////////////////////////
+//    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+//
+//    This file is part of the ordinal package for R (*ordinal*)
+//
+//    *ordinal* is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    *ordinal* is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    A copy of the GNU General Public License is available at
+//    <https://www.r-project.org/Licenses/> and/or
+//    <http://www.gnu.org/licenses/>.
+/////////////////////////////////////////////////////////////////////////////
 #include "links.h"
 
 /* This file implements scalar distribution, density and gradient
@@ -70,15 +89,15 @@ double d_plgamma(double eta, double lambda, int lower_tail)
     v = R_pow_di(lambda, -2) * exp(lambda * eta);
     if(lambda < 1.0e-6)
       v = 1 - pgamma(v, R_pow_di(lambda, -2), /*scale = */ 1,
-		     lower_tail, 0 /*give_log*/);
+		     1 /*lower_tail*/, 0 /*give_log*/);
     if(lambda > -1.0e-6)
       v = pgamma(v, R_pow_di(lambda, -2), /*scale = */ 1,
-		 lower_tail, 0/*give_log*/);
+                 1 /*lower_tail*/, 0 /*give_log*/);
     if(lambda >= -1.0e-6 && lambda <= 1.0e-6)
       // pnorm(x, mu, sigma, lower_tail, give_log);
       v = pnorm(eta, 0., 1., 1, 0);
   }
-  return !lower_tail ? 1 - v : v;
+  return lower_tail ? v : 1 - v;
 }
 
 /*-------------------------------------------------------*/

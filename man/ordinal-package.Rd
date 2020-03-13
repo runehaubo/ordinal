@@ -58,7 +58,7 @@ Cumulative link mixed models are fitted with \code{\link{clmm}} and the
 main features are:
 \itemize{
   \item{Any number of random effect terms can be included.}
-  \item{The syntax for the model formula resembles that of \code{\link[lme4]{lmer}}}
+  \item{The syntax for the model formula resembles that of \code{\link[lme4]{lmer}} from the \code{lme4} package.}
   \item{Nested random effects, crossed random effects and partially
     nested/crossed random effects are allowed.}
   \item{Estimation is via maximum likelihood using the Laplace
@@ -73,11 +73,6 @@ main features are:
     conditional modes of the random effects a large number of times. The
     likelihood function is optimized with a general purpose optimizer.}
 }
-
-In addition to the reference manual several vignettes describe aspects
-of the package. Two brief tutorials on \code{\link{clm}} and
-\code{\link{clmm}} introduces the use of these functions. The Primer
-vignette is a 30-page introduction to cumulative link models.
 
 A major update of the package in August 2011 introduced new and improved
 implementations of \code{\link{clm}} and \code{\link{clmm}}. The old
@@ -95,7 +90,7 @@ be \code{\link[=.Deprecated]{deprecated}} and
 \author{
   Rune Haubo B Christensen
 
-  Maintainer: Rune Haubo B Christensen <rhbc@imm.dtu.dk>
+  Maintainer: Rune Haubo B Christensen <rune.haubo@gmail.com>
 }
 %% \references{
 %%   ~~ Literature or other references for background information ~~

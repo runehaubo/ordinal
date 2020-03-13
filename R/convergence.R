@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Functions to assess and check convergence of CLMs. Some
 ## functions/methods are exported and some are used internally in
@@ -158,7 +177,7 @@ conv.check <-
     if(tol < 0)
         stop(gettextf("numerical tolerance is %g, expecting non-negative value",
                       tol), call.=FALSE)
-### FIXME: test this.
+### OPTION: test this.
     H <- fit$Hessian
     g <- fit$gradient
     max.grad <- max(abs(g))
@@ -177,7 +196,7 @@ conv.check <-
                "3" = "step factor reduced below minimum",
                "4" = "maximum number of consecutive Newton modifications reached")
     if(control$method != "Newton") mess <- NULL
-### FIXME: get proper convergence message from optim, nlminb, ucminf etc.
+### OPTION: get proper convergence message from optim, nlminb, ucminf etc.
     res <- c(res, alg.message=mess)
     ## }
     evd <- eigen(H, symmetric=TRUE, only.values=TRUE)$values
@@ -199,12 +218,18 @@ conv.check <-
         res$messages <-
             gettextf("Model failed to converge with max|grad| = %g (tol = %g)",
                      max.grad, control$gradTol)
+        ## Compute var-cov:
+        vcov <- try(chol2inv(ch), silent=TRUE)
+        if(!inherits(vcov, "try-error")) res$vcov[] <- vcov
         return(res)
     }
     if(!is.null(Theta.ok) && !Theta.ok) {
         res$code <- -3L
         res$messages <-
             "not all thresholds are increasing: fit is invalid"
+        ## Compute var-cov:
+        vcov <- try(chol2inv(ch), silent=TRUE)
+        if(!inherits(vcov, "try-error")) res$vcov[] <- vcov
         return(res)
     }
     zero <- sum(abs(evd) < tol)
@@ -256,7 +281,7 @@ conv.check <-
 
 cov.conv <- conv.check
 
-### FIXME: let convergence() print convergence info from clm using
+### OPTION: let convergence() print convergence info from clm using
 ### print.conv.check
 
 print.conv.check <-

@@ -37,7 +37,7 @@ rho1 <- ordinal:::get_clmRho.clm(fm1)
 l1 <- as.list(rho1)
 l2 <- as.list(update(fm1, doFit=FALSE))
 (test <- mapply(function(x, y) isTRUE(all.equal(x, y)),
-                l1, l2))
+                l1, l2[names(l1)]))
 stopifnot(all(test))
 ## If we modify the data (or other subset, weights, formulae, etc.)
 ## used in the model call, the results from update no longer correspond
@@ -50,7 +50,7 @@ l4 <- as.list(update(fm1, doFit=FALSE))
                 l1, l3))
 stopifnot(all(test)) ## same
 (test <- mapply(function(x, y) isTRUE(all.equal(x, y)),
-                l3, l4))
+                l3, l4[names(l3)]))
 stopifnot(sum(!test) == 8) ## not all the same anymore!
 ## In conclusion l1, l2, and l3 are identical. l4 is different.
 

@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## The main clm function and some auxiliary functions to generate the
 ## model frame and handle the model environment.
@@ -15,7 +34,8 @@ clm <-
   function(formula, scale, nominal, data, weights, start, subset,
            doFit = TRUE, na.action, contrasts, model = TRUE,
            control = list(),
-           link = c("logit", "probit", "cloglog", "loglog", "cauchit"),
+           link = c("logit", "probit", "cloglog", "loglog", "cauchit", 
+                    "Aranda-Ordaz", "log-gamma"),
            threshold = c("flexible", "symmetric", "symmetric2", "equidistant"), ...)
 {
     mc <- match.call(expand.dots = FALSE)
@@ -45,7 +65,6 @@ clm <-
     design <- c(design, makeThresholds(design$y.levels, threshold))
     design <- drop.cols(design, silent=TRUE, drop.scale=FALSE)
     clm.struct <- c(design, lst)
-    if(control$method == "struct") return(clm.struct)
     ## Fit model, check convergence, or return a model environment:
     fit <- clm.fit.default(clm.struct)
     if(doFit == FALSE) return(fit)
@@ -67,7 +86,7 @@ clm <-
 
 clm.newRho <-
     function(parent=parent.frame(), y, X, NOM=NULL, S=NULL, weights,
-             offset, S.offset=NULL, tJac, ...)
+             offset, S.offset=NULL, tJac, control=clm.control(), ...)
 ### Setting variables in rho: B1, B2, o1, o2, weights.
 {
     ## Make B1, B2, o1, o2 based on y, X and tJac:
@@ -88,17 +107,19 @@ clm.newRho <-
     B2 <- B2 %*% tJac
     ## update B1 and B2 with nominal effects:
     if(NCOL(NOM) > 1) { ## !is.null(NOM) && ncol(NOM) > 1) {
-        ## if !is.null(NOM) and NOM is more than an intercept:
-        LL1 <- lapply(1:ncol(NOM), function(x) B1 * NOM[keep, x])
-        B1 <- do.call(cbind, LL1)
-        LL2 <- lapply(1:ncol(NOM), function(x) B2 * NOM[keep, x])
-        B2 <- do.call(cbind, LL2)
+      ## if !is.null(NOM) and NOM is more than an intercept:
+      if(control$sign.nominal == "negative") NOM[, -1] <- -NOM[, -1]
+      LL1 <- lapply(1:ncol(NOM), function(x) B1 * NOM[keep, x])
+      B1 <- do.call(cbind, LL1)
+      LL2 <- lapply(1:ncol(NOM), function(x) B2 * NOM[keep, x])
+      B2 <- do.call(cbind, LL2)
     }
     ## update B1 and B2 with location effects (X):
     nbeta <- NCOL(X) - 1
     if(nbeta > 0) {
-        B1 <- cbind(B1, -X[keep, -1, drop = FALSE])
-        B2 <- cbind(B2, -X[keep, -1, drop = FALSE])
+      if(control$sign.location == "negative") X <- -X
+      B1 <- cbind(B1, X[keep, -1, drop = FALSE])
+      B2 <- cbind(B2, X[keep, -1, drop = FALSE])
     }
     dimnames(B1) <- NULL
     dimnames(B2) <- NULL

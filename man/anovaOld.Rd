@@ -68,4 +68,4 @@ if(require(MASS)) {
 }
 
 }
-\keyword{models}
+\keyword{internal}

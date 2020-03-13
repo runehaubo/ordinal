@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Various utility functions.
 
@@ -31,6 +50,9 @@ setLinks <- function(rho, link) {
                      "log-gamma" = function(x, lambda) glgamma(x, lambda)
                      )
   rho$link <- link
+  rho$nlambda <- if(rho$link %in% c("Aranda-Ordaz", "log-gamma")) 1 else 0
+  if(rho$link == "Aranda-Ordaz") rho$lambda <- 1
+  if(rho$link == "log-gamma") rho$lambda <- 0.1
 }
 
 makeThresholds <- function(y.levels, threshold) { ## , tJac) {
@@ -77,8 +99,9 @@ makeThresholds <- function(y.levels, threshold) { ## , tJac) {
                       rbind(diag(-1, ntheta / 2)[(ntheta / 2):1,],
                             diag(ntheta / 2)))
         tJac[,2] <- rep(0:1, each = ntheta / 2)
-        alpha.names <- c("central.1", "central.2",
-                         paste("spacing.", 1:(nalpha-2), sep=""))
+        alpha.names <- c("central.1", "central.2")
+        if(nalpha > 2) alpha.names <- 
+          c(alpha.names, paste("spacing.", 1:(nalpha-2), sep=""))
       }
     }
     ## Assumes latent mean is zero:
@@ -291,7 +314,7 @@ response.name <- function(terms) {
 }
 
 getB <- function(y, NOM=NULL, X=NULL, offset=NULL, tJac=NULL) {
-### FIXME: Is this function ever used?
+### NOTE: Is this function ever used?
 ### NOTE: no tests that arguments conform.
   nlev <- nlevels(y)
   n <- length(y)
@@ -329,7 +352,6 @@ Deparse <-
            c("call", "expression", "(", "function"),
            control = c("keepInteger", "showAttributes", "keepNA"),
            nlines = -1L)
-### FIXME: test if formals(Deparse) == formals(deparse)??
   deparse(expr=expr, width.cutoff= width.cutoff, backtick=backtick,
           control=control, nlines=nlines)
 
@@ -406,7 +428,7 @@ extractFromFrames <- function(frames, fullmf) {
     lst
 }
 
-formatTheta <- function(alpha, tJac, x) {
+formatTheta <- function(alpha, tJac, x, sign.nominal) {
     ## x: alpha, tJac, nom.terms, NOM, nom.contrasts, nom.xlevels,
     Theta.ok <- TRUE
     if(is.null(x[["NOM"]])) { ## no nominal effects
@@ -430,7 +452,8 @@ formatTheta <- function(alpha, tJac, x) {
                     assign=attr(x$NOM, "assign"),
                     contrasts=x$nom.contrasts,
                     tJac=tJac,
-                    xlevels=x$nom.xlevels)
+                    xlevels=x$nom.xlevels,
+                    sign.nominal=sign.nominal)
     ## Test that (finite) thresholds are increasing:
     if(all(is.finite(unlist(Theta.list$Theta)))) {
         th.increasing <- apply(Theta.list$Theta, 1, function(th)

@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## The function clm.fit() - an lm.fit or glm.fit equivalent for CLMs.
 
@@ -9,7 +28,8 @@ clm.fit.factor <-
   function(y, X, S, N, weights = rep(1, nrow(X)),
            offset = rep(0, nrow(X)), S.offset = rep(0, nrow(X)),
            control = list(), start, doFit=TRUE,
-           link = c("logit", "probit", "cloglog", "loglog", "cauchit"),
+           link = c("logit", "probit", "cloglog", "loglog", "cauchit", 
+                    "Aranda-Ordaz", "log-gamma"),
            threshold = c("flexible", "symmetric", "symmetric2", "equidistant"),
            ...)
 ### This function basically does the same as clm, but without setting
@@ -73,17 +93,24 @@ clm.fit.default <- function(y, ...)
         y <- drop.cols(y, silent=TRUE, drop.scale=FALSE)
     ## Make model environment:
     rho <- do.call(clm.newRho, y)
+    setLinks(rho, y$link)
     start <- set.start(rho, start=y$start, get.start=is.null(y$start),
                        threshold=y$threshold, link=y$link,
                        frames=y)
     rho$par <- as.vector(start) ## remove attributes
-    setLinks(rho, y$link)
     if(y$doFit == FALSE) return(rho)
+    if(length(rho$lambda) > 0 && y$control$method != "nlminb") {
+      message("Changing to 'nlminb' optimizer for flexible link function")
+      y$control$method <- "nlminb"
+    }
     ## Fit the model:
-    fit <- if(y$control$method == "Newton") {
-        clm.fit.NR(rho, y$control)
+    fit <- if(length(rho$lambda) > 0) {
+      clm.fit.flex(rho, control=y$control$ctrl) 
+    } else if(y$control$method == "Newton") {
+      clm.fit.NR(rho, y$control)
     } else {
-        clm.fit.optim(rho, y$control$method, y$control$ctrl) }
+      clm.fit.optim(rho, y$control$method, y$control$ctrl) 
+    }
     ## Adjust iteration count:
     if(y$control$method == "Newton" &&
        !is.null(start.iter <- attr(start, "start.iter")))
@@ -92,7 +119,7 @@ clm.fit.default <- function(y, ...)
     ## fitted.values, df.residual:
     fit <- clm.finalize(fit, y$weights, y$coef.names, y$aliased)
     fit$tJac <- format_tJac(y$tJac, y$y.levels, y$alpha.names)
-    th.res <- formatTheta(fit$alpha, fit$tJac, y)
+    th.res <- formatTheta(fit$alpha, fit$tJac, y, y$control$sign.nominal)
     ## Check convergence:
     conv <- conv.check(fit, control=y$control, Theta.ok=th.res$Theta.ok,
                        tol=y$control$tol)
@@ -114,13 +141,16 @@ clm.finalize <- function(fit, weights, coef.names, aliased)
     nalpha <- length(aliased$alpha)
     nbeta <- length(aliased$beta)
     nzeta <- length(aliased$zeta)
-    ncoef <- nalpha + nbeta + nzeta ## including aliased coef
-    npar <- sum(!unlist(aliased)) ## excluding aliased coef
+    nlambda <- length(fit$lambda)
+    ncoef <- nalpha + nbeta + nzeta + nlambda ## including aliased coef
+    npar <- sum(!unlist(aliased)) + nlambda  ## excluding aliased coef
     stopifnot(length(fit$par) == npar)
+    if(nlambda) aliased <- c(aliased, list(lambda = FALSE))
+    if(nlambda) coef.names <- c(coef.names, list(lambda="lambda"))
     fit <- within(fit, {
-        coefficients <- rep(NA, nalpha + nbeta + nzeta)
+        coefficients <- rep(NA, ncoef)
         ## ensure correct order of alpha, beta and zeta:
-        keep <- match(c("alpha", "beta", "zeta"), names(aliased),
+        keep <- match(c("alpha", "beta", "zeta", "lambda"), names(aliased),
                       nomatch=0)
         aliased <- lapply(aliased[keep], as.logical)
         for(i in names(aliased))

@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## The main clmm2 function and some related auxiliary functions.
 
@@ -350,14 +369,13 @@ getNAGQinR <- function(rho, par) {
         else
             ## PRnn <- (pfun(eta1Tmp) - pfun(eta2Tmp))^weights
             PRnn <- exp(weights * log(pfun(eta1Tmp) - pfun(eta2Tmp)))
-### FIXME: The fitted values could be evaluated with getFittedC for
+### OPTION: The fitted values could be evaluated with getFittedC for
 ### better precision.
         for(i in 1:r)
             ## PRrn[i,] <- apply(PRnn[grFac == i, ], 2, prod)
-### FIXME: Should this be: ???
             PRrn[i,] <- apply(PRnn[grFac == i, ,drop = FALSE], 2, prod)
         PRrn <- PRrn * agqws * dnorm(x=agqns, mean=0, sd=1)
-### FIXME: Could this be optimized by essentially computing dnorm 'by hand'?
+### OPTION: Could this be optimized by essentially computing dnorm 'by hand'?
     })
     -sum(log(rowSums(rho$PRrn)))
 }
@@ -482,7 +500,7 @@ getNGHQinR <- function(rho, par) {
         ##     ghqws[h] * exp(ghqns[h]^2) * dnorm(x=ghqns[h]) + SS[i]
         SS[i] <- exp(sum(wt * log(pfun(eta1s) - pfun(eta2s)))) *
           ghqws[h] + SS[i]
-### FIXME: The fitted values could be evaluated with getFittedC for
+### OPTION: The fitted values could be evaluated with getFittedC for
 ### better precision.
       }
     }
@@ -685,7 +703,7 @@ summary.clmm2 <- function(object, digits = max(3, .Options$digits - 3),
       stop("Model needs to be fitted with Hess = TRUE")
     }
     vc <- try(vcov(object), silent = TRUE)
-    if(class(vc) == "try-error") {
+    if(inherits(vc, "try-error")) {
         warning("Variance-covariance matrix of the parameters is not defined")
         coef[, 2:4] <- NaN
         if(correlation) warning("Correlation matrix is unavailable")
@@ -736,8 +754,8 @@ print.summary.clmm2 <- function(x, digits = x$digits, signif.stars =
     } else {
         cat("\nNo random effects\n")
     }
-### FIXME: Should the number of obs. and the number of groups be
-### displayed as in lmer?
+### OPTION: Should the number of obs. and the number of groups be
+### displayed as in clmm?
     coef <- format(round(x$coefficients, digits=digits))
     coef[,4] <- format.pval(x$coefficients[, 4])
     p <- length(x$beta); nxi <- length(x$xi)

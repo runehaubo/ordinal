@@ -10,3 +10,7 @@ NEWS.html
 \.o$
 \.so$
 \.dll$
+^revdep$
+^revdep_archive$
+^misc$
+^old_vignettes$

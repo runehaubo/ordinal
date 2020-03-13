@@ -1,12 +1,30 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Implementation of various methods for clm objects.
 
-print.clm <-
-  function(x, digits = max(3, getOption("digits") - 3), ...)
+print.clm <- function(x, digits = max(3, getOption("digits") - 3), ...)
 {
   cat("formula:", Deparse(formula(x$terms)), fill=TRUE)
-### NOTE: deparse(x$call$formula) will not always work since this may
-### not always be appropriately evaluated.
+  ### NOTE: deparse(x$call$formula) will not always work since this may
+  ### not always be appropriately evaluated.
   if(!is.null(x$call$scale))
     cat("scale:  ", Deparse(formula(x$S.terms)), fill=TRUE)
   if(!is.null(x$call$nominal))
@@ -16,26 +34,29 @@ print.clm <-
   if(!is.null(x$call$subset))
     cat("subset: ", Deparse(x$call$subset), fill=TRUE)
   cat("\n")
-
+  
   print(x$info, row.names=FALSE, right=FALSE)
-
+  
   if(length(x$beta)) {
     if(sum(x$aliased$beta) > 0) {
       cat("\nCoefficients: (", sum(x$aliased$beta),
           " not defined because of singularities)\n", sep = "")
     }
     else cat("\nCoefficients:\n")
-    print.default(format(x$beta, digits = digits),
-                  quote = FALSE)
+    print.default(format(x$beta, digits = digits), quote = FALSE)
   }
-    if(length(x$zeta)) {
+  if(length(x$zeta)) {
     if(sum(x$aliased$zeta) > 0)
       cat("\nlog-scale coefficients: (", sum(x$aliased$zeta),
           " not defined because of singularities)\n", sep = "")
     else cat("\nlog-scale coefficients:\n")
-    print.default(format(x$zeta, digits = digits),
-                  quote = FALSE)
+    print.default(format(x$zeta, digits = digits), quote = FALSE)
   }
+  if(length(x$lambda)) {
+    cat("\nLink coefficient:\n")
+    print.default(format(x$lambda, digits = digits), quote = FALSE)
+  }
+  
   if(length(x$alpha) > 0) {
     if(sum(x$aliased$alpha) > 0)
       cat("\nThreshold coefficients: (", sum(x$aliased$alpha),
@@ -48,7 +69,7 @@ print.clm <-
       print.default(format(x$alpha, digits = digits),
                     quote = FALSE)
   }
-
+  
   if(nzchar(mess <- naprint(x$na.action))) cat("(", mess, ")\n", sep="")
   return(invisible(x))
 }
@@ -159,6 +180,7 @@ print.summary.clm <-
   nalpha <- length(x$alpha)
   nbeta <- length(x$beta)
   nzeta <- length(x$zeta)
+  nlambda <- length(x$lambda)
   if(nbeta > 0) {
     if(sum(x$aliased$beta) > 0)
       cat("\nCoefficients: (", sum(x$aliased$beta),
@@ -174,6 +196,12 @@ print.summary.clm <-
           " not defined because of singularities)\n", sep = "")
     else cat("\nlog-scale coefficients:\n")
     printCoefmat(x$coefficients[nalpha + nbeta + 1:nzeta, , drop=FALSE],
+                 digits=digits, signif.stars=signif.stars,
+                 has.Pvalue=TRUE, ...)
+  }
+  if(nlambda > 0) {
+    cat("\nLink coefficients:\n")
+    printCoefmat(x$coefficients[nalpha + nbeta + nzeta + nlambda, , drop=FALSE],
                  digits=digits, signif.stars=signif.stars,
                  has.Pvalue=TRUE, ...)
   }
@@ -209,7 +237,7 @@ extractAIC.clm <- function(fit, scale = 0, k = 2, ...) {
 
 ### NOTE: AIC.clm implicitly defined via logLik.clm
 
-anova.clm <- function(object, ...)
+anova.clm <- function(object, ..., type = c("I", "II", "III", "1", "2", "3"))
 ### requires that clm objects have components:
 ###  edf: no. parameters used
 ###  call$formula
@@ -221,13 +249,13 @@ anova.clm <- function(object, ...)
   mc <- match.call()
   dots <- list(...)
   ## remove 'test' and 'type' arguments from dots-list:
-  not.keep <- which(names(dots) %in% c("test", "type"))
+  not.keep <- which(names(dots) %in% c("test"))
   if(length(not.keep)) {
-    message("'test' and 'type' arguments ignored in anova.clm\n")
+    message("'test' argument ignored in anova.clm\n")
     dots <- dots[-not.keep]
   }
-  if(length(dots) == 0)
-    stop('anova is not implemented for a single "clm" object')
+  if(length(dots) == 0) return(single_anova(object, type=type))
+  ## Multi-model anova method proceeds:
   mlist <- c(list(object), dots)
   if(!all(sapply(mlist, function(model)
                  inherits(model, c("clm", "clmm")))))
@@ -235,8 +263,7 @@ anova.clm <- function(object, ...)
   nfitted <- sapply(mlist, function(x) length(x$fitted.values))
   if(any(nfitted != nfitted[1L]))
     stop("models were not all fitted to the same dataset")
-### FIXME: consider comparing y returned by the models for a better
-### check?
+### OPTION: consider comparing y returned by the models for a better check?
   no.par <- sapply(mlist, function(x) x$edf)
   ## order list with increasing no. par:
   ord <- order(no.par, decreasing=FALSE)

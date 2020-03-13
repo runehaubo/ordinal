@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## A implementation of simple CLMs (simple_clm), i.e., CLMs without
 ## scale and nominal effects.
@@ -60,7 +79,7 @@ simple_clm <-
   rho <- clm.newRho(parent.frame(), y=frames$y, X=frames$X,
                     NOM=NULL, S=NULL,
                     weights=wts, offset=off, S.offset=NULL,
-                    tJac=frames$tJac)
+                    tJac=frames$tJac, control=control)
 
   ## Set starting values for the parameters:
   start <- set.start(rho, start=start, get.start=missing(start),
