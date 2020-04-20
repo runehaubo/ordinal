@@ -218,7 +218,7 @@ getREterms <- function(frames, formula) {
 ### NOTE: make sure 'formula' is appropriately evaluated and returned
 ### by clmm.formulae
     if(!length(barlist)) stop("No random effects terms specified in formula")
-    term.names <- unlist(lapply(barlist, deparse))
+    term.names <- unlist(lapply(barlist, function(x) paste(deparse(x), collapse="")))
     names(barlist) <- unlist(lapply(barlist, function(x) deparse(x[[3]])))
 ### NOTE: Deliberately naming the barlist elements by grouping factors
 ### and not by r.e. terms.
