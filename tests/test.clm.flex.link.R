@@ -63,6 +63,19 @@ predict(fm, newdata=newData, type="class")
 predict(fm, newdata=newData, type="prob", se.fit = TRUE, interval = TRUE)
 
 ########################################################################
+### Models with scale + flex link (or cauchit link)
+########################################################################
+
+fm <- clm(SURENESS ~ PRODID, scale=~PROD, data = soup, link="Aranda-Ordaz")
+summary(fm)
+
+fm <- clm(SURENESS ~ PRODID, scale=~PROD, data = soup, link="log-gamma")
+summary(fm)
+
+fm <- clm(SURENESS ~ PRODID, scale=~PROD, data = soup, link="cauchit")
+summary(fm)
+
+########################################################################
 ### clm.fit
 ########################################################################
 
