@@ -1,3 +1,22 @@
+#############################################################################
+#    Copyright (c) 2010-2019 Rune Haubo Bojesen Christensen
+#
+#    This file is part of the ordinal package for R (*ordinal*)
+#
+#    *ordinal* is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    *ordinal* is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    A copy of the GNU General Public License is available at
+#    <https://www.r-project.org/Licenses/> and/or
+#    <http://www.gnu.org/licenses/>.
+#############################################################################
 ## This file contains:
 ## Implementation of Cumulative Link Mixed Models in clmm().
 
@@ -15,7 +34,7 @@ clmmPhylo <-
 {
 ### Extract the matched call and initial testing:
   mc <- match.call(expand.dots = FALSE)
-### FIXME: Possibly call clm() when there are no random effects?
+### OPTION: Possibly call clm() when there are no random effects?
   link <- match.arg(link)
   threshold <- match.arg(threshold)
   if(missing(formula))  stop("Model needs a formula")
@@ -26,7 +45,7 @@ clmmPhylo <-
   formulae <- clmm.formulae(formula=formula)
   ## mf, y, X, wts, off, terms:
   frames <- clmm.frames(modelcall=mc, formulae=formulae, contrasts)
-### FIXME: What should 'method="model.frame"' return? Do we want Zt
+### QUEST: What should 'method="model.frame"' return? Do we want Zt
 ### included here as well?
   if(control$method == "model.frame") return(frames)
   ## Test rank deficiency and possibly drop some parameters:
@@ -44,7 +63,7 @@ clmmPhylo <-
   ## For each r.e. term, test if Z has more columns than rows to detect
   ## unidentifiability:
   test_no_ranef(Zt_list=retrms$retrms, frames=frames, checkRanef=control$checkRanef)
-### FIXME: save (the evaluated) formula in frames, so we only need the
+### OPTION: save (the evaluated) formula in frames, so we only need the
 ### frames argument to getREterms() ?
   use.ssr <- (retrms$ssr && !control$useMatrix)
   if(!is.null(cormat)) use.ssr <- FALSE
@@ -81,7 +100,7 @@ clmmPhylo <-
           rho$ST <- par2ST(as.vector(start[[2]]), rho$ST)
       }
   }
-### FIXME: set starting values in a more elegant way.
+### OPTION: set starting values in a more elegant way.
   
   #############
   ## Adjust rho$Zt for cholesky factor of known correlation matrix:
