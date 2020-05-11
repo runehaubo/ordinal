@@ -50,7 +50,7 @@ Christensen Statistics}
 %% - \Abstract{} almost as usual
 \Abstract{
 This paper introduces the R-package \pkg{ordinal} for the analysis of ordinal data using cumulative link models. The model framework implemented in \pkg{ordinal} includes partial proportional odds, structured thresholds, scale effects and flexible link functions. The package also support cumulative link models with random effects which are covered in a future paper. A speedy and reliable regularized Newton estimation scheme using analytical derivatives provides maximum likelihood estimation of the model class. The paper describes the implementation in the package as well as how to use the functionality in the package for analysis of ordinal data including topics on model identifiability and customized modelling. 
-The package implements methods for profile likelihood confidence intervals, predictions of various kinds as well as methods for checking the convergence of the fitted models.
+The package implements methods for profile likelihood confidence intervals, analysis of deviance tables with type I, II and III tests, predictions of various kinds as well as methods for checking the convergence of the fitted models.
 }
 
 %% - \Keywords{} with LaTeX markup, at least one required
@@ -142,7 +142,7 @@ Cumulative link models can be fitted by all the major software packages and whil
 
 \proglang{Python} has a package \pkg{mord} \citep{mord} for ordinal classification and prediction focused at machine learning applications.
 
-In \proglang{R}, several packages on the Comprehensive \proglang{R} Archive Network (CRAN) implements CLMs. \code{polr} from \pkg{MASS} \citep{MASS} implements standard CLMs allowing for the 5 standard link functions but no further extensions; the \pkg{VGAM} package \citep{VGAM} includes CLMs via the \code{vglm} function using the \code{cumulative} link. \code{vglm} allows for several link functions as well as partial effects. The \code{lrm} and \code{orm} functions from the \pkg{rms} package \citep{rms} also implements CLMs with the 5 standard link functions but without scale effects, partial or structured thresholds. A Bayesian alternative is implemented in the \pkg{brms} package \citep{brms} which includes structured thresholds in addition to random-effects.   
+In \proglang{R}, several packages on the Comprehensive \proglang{R} Archive Network (CRAN) implements CLMs. \code{polr} from \pkg{MASS} \citep{MASS} implements standard CLMs allowing for the 5 standard link functions but no further extensions; the \pkg{VGAM} package \citep{VGAM} includes CLMs via the \code{vglm} function using the \code{cumulative} link. \code{vglm} allows for several link functions as well as partial effects. The \code{lrm} and \code{orm} functions from the \pkg{rms} package \citep{rms} also implements CLMs with the 5 standard link functions but without scale effects, partial or structured thresholds. A Bayesian alternative is implemented in the \pkg{brms} package \citep{brms, brms2} which includes structured thresholds in addition to random-effects.   
 
 In addition, several other \proglang{R} packages include methods for analyses of ordinal data including \pkg{oglmx} \citep{oglmx}, \pkg{MCMCpack} \citep{MCMCpack}, \pkg{mvord} \citep{mvord}, \pkg{CUB} \citep{CUB}, and \pkg{ordinalgmifs} \citep{ordinalgmifs}.
 
@@ -150,7 +150,7 @@ In addition, several other \proglang{R} packages include methods for analyses of
 \subsection[ordinal package overview]{\pkg{ordinal} package overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The \pkg{ordinal} package implements CLMs and CLMMs along with functions and methods to support these model classes as summarized in Table~\ref{tab:functions_in_ordinal}. The two key functions in \pkg{ordinal} are \code{clm} and \code{clmm} which fits CLMs and CLMMs respectively; \code{clm2} and \code{clmm2}\footnote{A brief tutorial on \code{clmm2} is currently available at the package website on CRAN: \url{https://CRAN.R-project.org/package=ordinal}} provide legacy implementations primarily retained for backwards compatibility. This paper introduces \code{clm} and its associated functionality covering CLMs with location, scale and nominal effects, structured thresholds and flexible link functions. \code{clm.fit} is the main work horse behind \code{clm} and an analogue to \code{lm.fit} for linear models. The package includes methods for assessment of convergence with \code{convergence} and \code{slice}, a support method for removing linearly dependent columns from a design matrix in \code{drop.coef}. Distributional support functions in \pkg{ordinal} provide support for Gumbel and log-gamma distributions as well as gradients\footnote{gradients with respect to $x$, the quantile; not the parameters of the distributions} of normal, logistic and Cauchy probability density functions which are used in the iterative methods implemented in \code{clm} and \code{clmm}. 
+The \pkg{ordinal} package implements CLMs and CLMMs along with functions and methods to support these model classes as summarized in Table~\ref{tab:functions_in_ordinal}. The two key functions in \pkg{ordinal} are \code{clm} and \code{clmm} which fits CLMs and CLMMs respectively; \code{clm2} and \code{clmm2}\footnote{A brief tutorial on \code{clmm2} is currently available at the package website on CRAN: \url{https://CRAN.R-project.org/package=ordinal}} provide legacy implementations primarily retained for backwards compatibility. This paper introduces \code{clm} and its associated functionality covering CLMs with location, scale and nominal effects, structured thresholds and flexible link functions. \code{clm.fit} is the main work horse behind \code{clm} and an analogue to \code{lm.fit} for linear models. The package includes methods for assessment of convergence with \code{convergence} and \code{slice}, an auxiliary method for removing linearly dependent columns from a design matrix in \code{drop.coef}. Distributional support functions in \pkg{ordinal} provide support for Gumbel and log-gamma distributions as well as gradients\footnote{gradients with respect to $x$, the quantile; not the parameters of the distributions} of normal, logistic and Cauchy probability density functions which are used in the iterative methods implemented in \code{clm} and \code{clmm}. 
 
 
 \begin{table}[t!]
@@ -174,10 +174,10 @@ The \pkg{ordinal} package implements CLMs and CLMMs along with functions and met
     \code{clmm.control} & &  & \code{gcauchy}$^{\textsf{c}}$ \\
     \hline
   \end{tabular} \\
-  \caption{Functions in \pkg{ordinal}. Superscript "c" indicates (partial or full) implementation in \proglang{C}.\label{tab:functions_in_ordinal}}
+  \caption{Key functions in \pkg{ordinal}. Superscript "c" indicates (partial or full) implementation in \proglang{C}.\label{tab:functions_in_ordinal}}
 \end{table}
   
-As summarized in Table~\ref{tab:clm_methods}, \pkg{ordinal} provides the familiar suite of extractor and print methods for \code{clm} objects known from \code{lm} and \code{glm}. These methods all behave in ways similar to those for \code{glm}-objects with the exception of \code{model.matrix} which returns a list of model matrices and \code{terms} which can return the \code{terms} object for each of three formulae. The inference methods facilitate profile likelihood and Wald confidence intervals via \code{profile} and \code{confint}, likelihood ratio tests for model comparison via \code{anova}, model assessment by tests of removal of model terms via \code{drop1} and addition of new terms via \code{add1} or AIC-based model selection via \code{step}. Calling \code{anova} on a single \code{clm}-object provides an analysis of deviance table with type I, II or III Wald-based $\chi^2$ tests following the \proglang{SAS}-definitions of such tests \citep{SAStype}. In addition to standard use of \code{clm}, the implementation facilitates extraction a model environment containing a complete representation of the model allowing the user to fit costumized models containing, for instance, special structures on the threshold parameters, restrictions on regression parameters or other case-specific model requirements.
+As summarized in Table~\ref{tab:clm_methods}, \pkg{ordinal} provides the familiar suite of extractor and print methods for \code{clm} objects known from \code{lm} and \code{glm}. These methods all behave in ways similar to those for \code{glm}-objects with the exception of \code{model.matrix} which returns a list of model matrices and \code{terms} which can return the \code{terms} object for each of three formulae. The inference methods facilitate profile likelihood confidence intervals via \code{profile} and \code{confint}, likelihood ratio tests for model comparison via \code{anova}, model assessment by tests of removal of model terms via \code{drop1} and addition of new terms via \code{add1} or AIC-based model selection via \code{step}. Calling \code{anova} on a single \code{clm}-object provides an analysis of deviance table with type I, II or III Wald-based $\chi^2$ tests following the \proglang{SAS}-definitions of such tests \citep{SAStype}. In addition to standard use of \code{clm}, the implementation facilitates extraction a model environment containing a complete representation of the model allowing the user to fit costumized models containing, for instance, special structures on the threshold parameters, restrictions on regression parameters or other case-specific model requirements.
 As CLMMs are not covered by this paper methods for \code{clmm} objects will not be discussed.
 
 Other packages including \pkg{emmeans} \citep{emmeans}, \pkg{margins} \citep{margins}, \pkg{ggeffects} \citep{ggeffects}, \pkg{generalhoslem} \citep{generalhoslem} and \pkg{effects} \citep{effects1, effects2} extend the \pkg{ordinal} package by providing methods marginal means, tests of functions of the coefficients, goodness-of-fit tests and methods for illustration of fitted models.
@@ -198,7 +198,7 @@ Other packages including \pkg{emmeans} \citep{emmeans}, \pkg{margins} \citep{mar
     \code{extractAIC} & & \code{step}, \code{stepAIC} & \\
     \hline
   \end{tabular}
-  \caption{Methods for \code{clm} objects.\label{tab:clm_methods}}
+  \caption{Key methods for \code{clm} objects.\label{tab:clm_methods}}
 \end{table}
   
 The \pkg{ordinal} package is therefore unique in providing a comprehensive framework for cumulative link models exceeding that of other software packages with its functionality extended by a series of additional \proglang{R} packages. 
@@ -207,7 +207,7 @@ The \pkg{ordinal} package is therefore unique in providing a comprehensive frame
 \subsection{Organization of the paper}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The remainder of the paper is organized as follows. The next section establishes notation by defining CLMs and associated log-likelihood functions, then describes the extended class of CLMs that is implemented in \pkg{ordinal} including details about scale effects, structured thresholds, partial proportional odds and flexible link functions. The third section describes how maximum likelihood (ML) estimation of CLMs is implemented in \pkg{ordinal}. The fourth section describes how CLMs are fitted and ordinal data are analysed with \pkg{ordinal} including sections on nominal effects, scale effects, structured thresholds, profile likelihoods, assessment of model convergence, fitted values and predictions. The final parts of section four is on a more advanced level and includes issues around model identifiability and customizable fitting of models not otherwise covered by the \pkg{ordinal} API. We end in section~\ref{sec:conclusions} with a brief conclusion.
+The remainder of the paper is organized as follows. The next section establishes notation by defining CLMs and associated log-likelihood functions, then describes the extended class of CLMs that is implemented in \pkg{ordinal} including details about scale effects, structured thresholds, partial proportional odds and flexible link functions. The third section describes how maximum likelihood (ML) estimation of CLMs is implemented in \pkg{ordinal}. The fourth section describes how CLMs are fitted and ordinal data are analysed with \pkg{ordinal} including sections on nominal effects, scale effects, structured thresholds, flexible link functions, profile likelihoods, assessment of model convergence, fitted values and predictions. The final parts of section four is on a more advanced level and include issues around model identifiability and customizable fitting of models not otherwise covered by the \pkg{ordinal} API. We end in section~\ref{sec:conclusions} with Conclusions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Cumulative link models}
@@ -689,7 +689,7 @@ This is deliberately not used in \pkg{ordinal} because the log-likelihood functi
 \subsubsection{Starting values}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-For the basic CLMs~(\ref{eq:BasicCLM}) the threshold parameters are initialized to an increasing sequence such that the cumulative density of a logistic distribution between consecutive thresholds (and below the lowest or above the highest threshold) is the constant. The regression parameters $\bm\beta$, scale parameters $\bm\zeta$ as well as nominal effect $\bm\beta^*$ are initialized to 0.
+For the basic CLMs~(\ref{eq:BasicCLM}) the threshold parameters are initialized to an increasing sequence such that the cumulative density of a logistic distribution between consecutive thresholds (and below the lowest or above the highest threshold) is constant. The regression parameters $\bm\beta$, scale parameters $\bm\zeta$ as well as nominal effect $\bm\beta^*$ are initialized to 0.
 
 If the model specifies a cauchit link or includes scale parameters estimation starts at the parameter estimates of a model using the probit link and/or without the scale-part of the model.
 
@@ -763,7 +763,7 @@ cat(paste(cc_args[-length(cc_args)], "\n"))
 %
 The \code{method} argument specifies the optimization and/or return method. The default estimation method (\code{Newton}) is the regularized Newton-Raphson estimation scheme described in section~\ref{sec:algorithm}; options \code{model.frame} and \code{design} prompts \code{clm} to return respectively the \code{model.frame} and a list of objects that represent the internal representation instead of fitting the model; options \code{ucminf}, \code{nlminb} and \code{optim} represent different general-purpose optimizers which may be used to fit the model (the former from package \pkg{ucminf} \citep{ucminf}, the latter two from package \pkg{stats}). 
 The \code{sign.location} and \code{sign.nominal} options allow the user to flip the signs on the location and nominal model terms.
-The \code{convergence} argument instructs \code{clm} how to alert the user of potential convergence problems; \code{...} are optional arguments passed on to the general purpose optimizers; \code{trace} applies across all optimizers and positive values lead to printing of progress during iterations; the remaining arguments (\code{maxIter, gradTol, maxLineIter, relTol, tol}) control the behavior of the regularized NR algorithm described in section~\ref{sec:algorithm}. 
+The \code{convergence} argument instructs \code{clm} how to alert the user of potential convergence problems; \code{...} are optional arguments passed on to the general purpose optimizers; \code{trace} applies across all optimizers and positive values lead to printing of progress during iterations; the remaining arguments (\code{maxIter, gradTol, maxLineIter, relTol, tol}) control the behavior of the regularized NR algorithm described in appendix~\ref{sec:algorithm}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection[Fitting a basic cumulative link model with clm]{Fitting a basic cumulative link model with \code{clm}} \label{sec:fitting-basic-clm}
@@ -1053,7 +1053,7 @@ or add terms to the (location) \code{formula}.
 
 In section~\ref{sec:nominal-effects} nominal effects were described where the assumption that regression parameters have the same effect across all thresholds was relaxed. In
 this section additional restrictions on the
-thresholds will be instead imposed. 
+thresholds will be imposed instead. 
 The following model requires that the thresholds,
 $\{ \theta_j \}$ are equidistant or equally spaced. This allows us to assess an assumption that judges are using the response scale in such a way that there is the same distance between adjacent response categories, i.e., that $\theta_j - \theta_{j-1} = \textup{constant}$ for $j = 2, ..., J-1$. The effect of equidistant thresholds is illustrated in Figure~\ref{fig:clm_structured_thresholds} and can be fitted with:
 <<>>=
@@ -1125,7 +1125,7 @@ A comparison of these models shows that the scale effects increase the likelihoo
 fm_location <- update(fm_binorm, scale = ~ 1)
 anova(fm_location, fm_binorm, fm_nom)
 @
-Note that both the location-only and bi-normal models are nested under the model with nominal effects making these models comparable in likelihood ratio tests. This example illustrates an often seen aspect: that models allowing for scale differences frequently capture the majority of deviations from location-only effects that could otherwise be captured by nominal effects.
+Note that both the location-only and bi-normal models are nested under the model with nominal effects making these models comparable in likelihood ratio tests. This example illustrates an often seen aspect: that models allowing for scale differences frequently capture the majority of deviations from location-only effects that could otherwise be captured by nominal effects using fewer parameters.
 
 The role of link functions in relation to the evidence of non-location effects is also illustrated by this example. If we consider the complementary log-log link it is apparent that there is no evidence of scale differences. Furthermore, the likelihood of a complementary log-log model with constant scale is almost the same as that of the bi-normal model:
 <<>>=
@@ -1360,8 +1360,7 @@ Material in the remainder of this section is generally on a more advanced level 
 In binary logistic regression the issue of \emph{complete separation} is well known. This may happen, for example if only ``success'' or only ``failure'' is observed for a level of a treatment factor. In CLMs the issue may appear even when outcomes are observed in more than one response category. This can be illustrated using the \code{wine} data set if we combine the three central categories:
 <<>>=
 wine <- within(wine, {
-  rating_comb3 <- rating
-  levels(rating_comb3) <- c("1", "2-4", "2-4", "2-4", "5")
+  rating_comb3 <- factor(rating, labels = c("1", "2-4", "2-4", "2-4", "5"))
 }) 
 ftable(rating_comb3 ~ temp, data = wine)
 fm.comb3 <- clm(rating_comb3 ~ temp, data = wine)
@@ -1409,8 +1408,7 @@ The issue of aliased coefficients extends in CLMs to nominal effects since the j
 The scope of model structures allowed in \code{clm} makes it possible to specify models which are over parameterized in ways that do not lead to rank deficient design matrices and as such are not easily detected before fitting the model. An example is given here which includes both additive (location) and multiplicative (scale) effects of \code{contact} for a binomial response variable but the issue can also occur with more than two response categories:
 <<>>=
 wine <- within(wine, {
-  rating_comb2 <- rating
-  levels(rating_comb2) <- c("1-2", "1-2", "3-5", "3-5", "3-5")
+  rating_comb2 <- factor(rating, labels = c("1-2", "1-2", "3-5", "3-5", "3-5"))
 }) 
 ftable(rating_comb2 ~ contact, data = wine)
 fm.comb2 <- clm(rating_comb2 ~ contact, scale = ~ contact, data = wine)
@@ -1537,17 +1535,16 @@ Thus the log-odds decrease linearly from 1.02 for the first two disease categori
 \section{Conclusions} \label{sec:conclusions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\bf Summary and conclusions}
+This paper has described the class of cumulative link models for the analysis of ordinal data and the implementation of such models in the \proglang{R} package \pkg{ordinal}. It is shown how the package supports model building and assessment of CLMs with scale effects, partial proportional odds, structured thresholds, flexible link functions and how models can be costumized to specific needs. A number of examples have been given illustrating analyses of ordinal data using \code{clm} in practice. 
 
-Cumulative link models is a very rich model class in between, in a sense, the perhaps the two most important model classes in statistics; linear models and logistic regression models. The greater flexibility of CLMs relative to binary logistic regression models also facilitates to the ability to check assumptions such as the partial proportional odds assumption. Non-linear structures such as scale effects arise naturally in a latent variable interpretation. In addition to nominal effects and the non-linear scale effects, the ordered nature of the thresholds gives rise to computational challenges which we have described and addressed in the \pkg{ordinal} package. 
+The significant flexibility of model structures available in \pkg{ordinal} is in one respect a clear advantage but it can also be a challenge when particular model variants turn out to be unidentifiable. Analytical detection of unidentifiable models could prove very useful in the analysis of ordinal data, but it is, unfortunately, a difficult question that remains a topic of future research.
+
+In a wider data analysis perspective, cumulative link models have been described as a very rich model class---a class that sits in between, in a sense, the perhaps the two most important model classes in statistics; linear models and logistic regression models. The greater flexibility of CLMs relative to binary logistic regression models facilitates the ability to check assumptions such as the partial proportional odds assumption. A latent variable interpretation connects cumulative link models to linear models in a natural way and also motivates non-linear structures such as scale effects. In addition to nominal effects and the non-linear scale effects, the ordered nature of the thresholds gives rise to computational challenges that we have described here and addressed in the \pkg{ordinal} package. 
 
 In addition to computational challenges, practical data analysis with CLMs can also be challenging. In our experience a top-down approach in which a ``full'' model is fitted and gradually simplified is often problematic, not only because this easily leads to unidentifiable models but also because there are many different ways in which models can be reduced or expanded. A more pragmatic approach is often preferred; understanding the data through plots, tables, and even linear models can aid in finding a suitable intermediate ordinal starting model. 
 
-Attempts to identify a ``correct'' model will also often lead to frustrations; the greater the model framework, the greater the risk that there are multiple models which fit the data (almost) equally well. It is well known statistical wisdom that with enough data many goodness of fit tests become sensitive to even minor deviations of little practical relevance. This is particularly true for tests of partial proportional odds; in the author's experience almost all CLMs on real data show some evidence of non-proportional odds for one or more variables while the most useful representation of the data is often a model that simply assumes proportional odds.
+Attempts to identify a ``correct'' model will also often lead to frustrations; the greater the model framework, the greater the risk that there are multiple models which fit the data (almost) equally well. It is well known statistical wisdom that with enough data many goodness of fit tests become sensitive to even minor deviations of little practical relevance. This is particularly true for tests of partial proportional odds; in the author's experience almost all CLMs on real data show some evidence of non-proportional odds for one or more variables but it is not always the case that models with partial or non-proportional odds are the most useful. Such effects complicate the interpretation and often generalize poorly outside the observed data and models assuming proportional odds or including scale effects are often more appropriate. 
 
-{\bf Future work}
-
-Analytical detection of which coefficients suffer from unidentifiability due to \emph{complete separation} is a topic for future research and therefore unavailable in current versions of \pkg{ordinal}.
 
 %% -- Optional special unnumbered sections -------------------------------------
 
