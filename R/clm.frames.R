@@ -202,7 +202,7 @@ get_clmFormulas <- function(mc, envir=parent.frame(2L))
         if(!is.null(env <- environment(forms[[1]]))) env else envir
     ## ensure formula, scale and nominal are formulas:
     forms[] <- lapply(forms, function(x) { # 'is.character(.)' for scale = "~ ..."
-        tryCatch(formula(if(is.character(x)) x else deparse(x),
+        tryCatch(formula(if(is.character(x)) x else Deparse(x),
                          env = form.envir),
                  error = function(e)e)
     })

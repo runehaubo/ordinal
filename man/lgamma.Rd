@@ -58,10 +58,10 @@ glgamma(x, lambda)
   \eqn{\lambda = 0} the distribution is symmetric (and equals the normal
   distribution), and if \eqn{\lambda > 0} the distribution is left
   skew.
-  
-  The log-gamma distribution function is defined as \ldots pending.
-  
-  The density and gradient of the density are defined as\ldots pending.
+  %
+  % The log-gamma distribution function is defined as \ldots pending.
+  %
+  % The density and gradient of the density are defined as\ldots pending.
   
   These distribution functions, densities and gradients are used in the
   Newton-Raphson algorithms in fitting cumulative link models with
