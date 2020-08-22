@@ -272,3 +272,7 @@ March 04 2010:
 
 2019-12-11:
 - Get rid of S3 class checks with class() - now using inherits() instead.
+
+2020-08-22:
+- Fix evaluation of long formulae in clmm - thanks to Stéphane Guillou, 
+  Stefan Th. Gries and Tingting Zhan for reporting.

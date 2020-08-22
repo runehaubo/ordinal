@@ -141,7 +141,7 @@ clmm.formulae <- function(formula) {
         if(!is.null(env <- environment(form))) env
         else parent.frame(2)
     ## ensure 'formula' is a formula-object:
-    form <- tryCatch(formula(if(is.character(form)) form else deparse(form),
+    form <- tryCatch(formula(if(is.character(form)) form else Deparse(form),
                              env = form.envir), error = identity)
     ## report error if the formula cannot be interpreted
     if(inherits(form, "error"))
@@ -218,8 +218,8 @@ getREterms <- function(frames, formula) {
 ### NOTE: make sure 'formula' is appropriately evaluated and returned
 ### by clmm.formulae
     if(!length(barlist)) stop("No random effects terms specified in formula")
-    term.names <- unlist(lapply(barlist, function(x) paste(deparse(x), collapse="")))
-    names(barlist) <- unlist(lapply(barlist, function(x) deparse(x[[3]])))
+    term.names <- unlist(lapply(barlist, function(x) Deparse(x)))
+    names(barlist) <- unlist(lapply(barlist, function(x) Deparse(x[[3]])))
 ### NOTE: Deliberately naming the barlist elements by grouping factors
 ### and not by r.e. terms.
     ## list of grouping factors for the random terms:

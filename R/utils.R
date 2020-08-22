@@ -349,11 +349,12 @@ getB <- function(y, NOM=NULL, X=NULL, offset=NULL, tJac=NULL) {
 
 Deparse <-
   function(expr, width.cutoff = 500L, backtick = mode(expr) %in%
-           c("call", "expression", "(", "function"),
+             c("call", "expression", "(", "function"),
            control = c("keepInteger", "showAttributes", "keepNA"),
            nlines = -1L)
-  deparse(expr=expr, width.cutoff= width.cutoff, backtick=backtick,
-          control=control, nlines=nlines)
+    paste(deparse(expr=expr, width.cutoff= width.cutoff, 
+                  backtick=backtick,
+                  control=control, nlines=nlines), collapse = " ")
 
 getContrasts <- function(terms, contrasts) {
     if(is.null(contrasts)) return(NULL)

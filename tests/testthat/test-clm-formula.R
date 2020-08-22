@@ -194,3 +194,15 @@ test_that("'.'-notation works in formula", {
     mapply(fun, fm0[keep], fm1[keep])
     #################################
 })
+
+test_that("long formulae work in clmm", {
+  # Long formulae also work:
+  wine2 <- wine
+  names(wine2) <- lapply(names(wine), paste0, "_quite_long")
+  expect_warning(
+    mm <- clmm(rating_quite_long ~ temp_quite_long + contact_quite_long + (1|judge_quite_long),
+               data = wine2)
+    , regexp = NA)
+})
+
+
