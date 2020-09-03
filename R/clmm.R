@@ -1,21 +1,21 @@
 #############################################################################
-#    Copyright (c) 2010-2019 Rune Haubo Bojesen Christensen
-#
-#    This file is part of the ordinal package for R (*ordinal*)
-#
-#    *ordinal* is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    *ordinal* is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    A copy of the GNU General Public License is available at
-#    <https://www.r-project.org/Licenses/> and/or
-#    <http://www.gnu.org/licenses/>.
+##    Copyright (c) 2010-2020 Rune Haubo Bojesen Christensen
+##
+##    This file is part of the ordinal package for R (*ordinal*)
+##
+##    *ordinal* is free software: you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation, either version 2 of the License, or
+##    (at your option) any later version.
+##
+##    *ordinal* is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    A copy of the GNU General Public License is available at
+##    <https://www.r-project.org/Licenses/> and/or
+##    <http://www.gnu.org/licenses/>.
 #############################################################################
 ## This file contains:
 ## Implementation of Cumulative Link Mixed Models in clmm().
@@ -141,7 +141,7 @@ clmm.formulae <- function(formula) {
         if(!is.null(env <- environment(form))) env
         else parent.frame(2)
     ## ensure 'formula' is a formula-object:
-    form <- tryCatch(formula(if(is.character(form)) form else deparse(form),
+    form <- tryCatch(formula(if(is.character(form)) form else Deparse(form),
                              env = form.envir), error = identity)
     ## report error if the formula cannot be interpreted
     if(inherits(form, "error"))
@@ -218,8 +218,8 @@ getREterms <- function(frames, formula) {
 ### NOTE: make sure 'formula' is appropriately evaluated and returned
 ### by clmm.formulae
     if(!length(barlist)) stop("No random effects terms specified in formula")
-    term.names <- unlist(lapply(barlist, function(x) paste(deparse(x), collapse="")))
-    names(barlist) <- unlist(lapply(barlist, function(x) deparse(x[[3]])))
+    term.names <- unlist(lapply(barlist, function(x) Deparse(x)))
+    names(barlist) <- unlist(lapply(barlist, function(x) Deparse(x[[3]])))
 ### NOTE: Deliberately naming the barlist elements by grouping factors
 ### and not by r.e. terms.
     ## list of grouping factors for the random terms:

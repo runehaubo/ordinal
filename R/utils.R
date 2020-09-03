@@ -1,21 +1,21 @@
 #############################################################################
-#    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
-#
-#    This file is part of the ordinal package for R (*ordinal*)
-#
-#    *ordinal* is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    *ordinal* is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    A copy of the GNU General Public License is available at
-#    <https://www.r-project.org/Licenses/> and/or
-#    <http://www.gnu.org/licenses/>.
+##    Copyright (c) 2010-2020 Rune Haubo Bojesen Christensen
+##
+##    This file is part of the ordinal package for R (*ordinal*)
+##
+##    *ordinal* is free software: you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation, either version 2 of the License, or
+##    (at your option) any later version.
+##
+##    *ordinal* is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    A copy of the GNU General Public License is available at
+##    <https://www.r-project.org/Licenses/> and/or
+##    <http://www.gnu.org/licenses/>.
 #############################################################################
 ## This file contains:
 ## Various utility functions.
@@ -349,11 +349,12 @@ getB <- function(y, NOM=NULL, X=NULL, offset=NULL, tJac=NULL) {
 
 Deparse <-
   function(expr, width.cutoff = 500L, backtick = mode(expr) %in%
-           c("call", "expression", "(", "function"),
+             c("call", "expression", "(", "function"),
            control = c("keepInteger", "showAttributes", "keepNA"),
            nlines = -1L)
-  deparse(expr=expr, width.cutoff= width.cutoff, backtick=backtick,
-          control=control, nlines=nlines)
+    paste(deparse(expr=expr, width.cutoff= width.cutoff, 
+                  backtick=backtick,
+                  control=control, nlines=nlines), collapse = " ")
 
 getContrasts <- function(terms, contrasts) {
     if(is.null(contrasts)) return(NULL)
