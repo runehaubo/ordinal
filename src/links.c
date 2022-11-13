@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-//    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+//    Copyright (c) 2010-2022 Rune Haubo Bojesen Christensen
 //
 //    This file is part of the ordinal package for R (*ordinal*)
 //

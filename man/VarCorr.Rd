@@ -11,7 +11,6 @@
   cumulative link mixed model (CLMM) fitted with \code{clmm}.
 }
 \usage{
-VarCorr(x, ...)
 
 \method{VarCorr}{clmm}(x, ...)
 

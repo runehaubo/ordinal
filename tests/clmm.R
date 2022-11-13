@@ -28,3 +28,10 @@ fmm <- clmm(SURENESS ~ PROD + (1|RESP) + (1|PROD:RESP), data=soup,
 summary(fmm)
 
 #################################
+
+## Estimation with implicit intercept:
+fm1 <- clmm(rating ~ 1 + (1|judge), data = wine) 
+fm2 <- clmm(rating ~ (1|judge), data = wine) 
+fm3 <- clmm(rating ~ 0 + (1|judge), data = wine)
+stopifnot(isTRUE(all.equal(coef(fm1), coef(fm2), tolerance=1e-5)),
+          isTRUE(all.equal(coef(fm1), coef(fm3), tolerance=1e-5)))

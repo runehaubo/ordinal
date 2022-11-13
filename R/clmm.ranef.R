@@ -1,5 +1,5 @@
 #############################################################################
-##    Copyright (c) 2010-2020 Rune Haubo Bojesen Christensen
+##    Copyright (c) 2010-2022 Rune Haubo Bojesen Christensen
 ##
 ##    This file is part of the ordinal package for R (*ordinal*)
 ##
@@ -26,7 +26,7 @@
 ## object$coefficients
 ### NOTE: Should return a *named* vector
 
-ranef <- function(object, ...) UseMethod("ranef")
+# ranef <- function(object, ...) UseMethod("ranef")
 ## fixef <- function(object, ...) UseMethod("fixef")
 
 ranef.clmm <- function(object, condVar=FALSE, ...)

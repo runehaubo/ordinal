@@ -27,7 +27,7 @@ importFrom("stats",
            "pcauchy", "pchisq", "pgamma", "plogis", "pnorm",
            "printCoefmat", "profile", "qchisq", "qlogis", "qnorm",
            "runif", "setNames", "spline", "terms", "update.formula",
-           "vcov", "nobs", "delete.response", "lm.fit", "resid")
+           "vcov", "nobs", "delete.response", "lm.fit", "resid", "reformulate")
 
 ## importFrom(stats,
 ##            nobs)
@@ -39,9 +39,9 @@ import(methods)
 ##            checkAtAssignment,
 ##            loadMethod)
 import(Matrix)
-## importFrom(nlme,
-##            ranef,
-##            VarCorr)
+importFrom(nlme,
+            ranef, # also exported
+            VarCorr) # also exported
 ## importFrom(numDeriv,
 ##            hessian,
 ##            grad)
@@ -74,11 +74,9 @@ export(convergence)
 export(drop.coef)
 export(nominal_test)
 export(scale_test)
-
-## NOTE: Also exporting ranef.clmm and VarCorr.clmm to make sure the
-## clmm-methods work after loading nlme (or lme4):
-export(ranef, ranef.clmm, condVar, VarCorr, VarCorr.clmm)
-## export(ranef, ranef.clmm, condVar, condVar.clmm, VarCorr, VarCorr.clmm)
+export(condVar)
+export(ranef)
+export(VarCorr)
 
 export(gnorm, glogis, gcauchy,
        pgumbel, dgumbel, ggumbel, qgumbel, rgumbel,
@@ -138,6 +136,7 @@ S3method(nobs, clmm)
 S3method(ranef, clmm)
 S3method(condVar, clmm)
 S3method(VarCorr, clmm)
+S3method(model.matrix, clmm)
 
 
 ##################################################################

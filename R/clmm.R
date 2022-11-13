@@ -1,5 +1,5 @@
 #############################################################################
-##    Copyright (c) 2010-2020 Rune Haubo Bojesen Christensen
+##    Copyright (c) 2010-2022 Rune Haubo Bojesen Christensen
 ##
 ##    This file is part of the ordinal package for R (*ordinal*)
 ##
@@ -151,6 +151,9 @@ clmm.formulae <- function(formula) {
     ## (fullForm) and a formula with only fixed-effects variables
     ## (fixedForm):
     fixedForm <- nobars(form) ## ignore terms with '|'
+    # Handle case where formula is only response ~ RE:
+    fixedForm <- if(length(fixedForm) == 1 || !inherits(fixedForm, "formula")) 
+      reformulate("1", response = form[[2]], env=form.envir) else fixedForm
     fullForm <- subbars(form)      # substitute `+' for `|'
     ## Set the appropriate environments:
     environment(fullForm) <- environment(fixedForm) <-
@@ -249,7 +252,7 @@ getREterms <- function(frames, formula) {
 ### followed by columns for the 2nd gr.fac.
 ###
     ## single simple random effect on the intercept?
-    ssr <- (length(barlist) == 1 && as.character(barlist[[1]][[2]]) == "1")
+    ssr <- (length(barlist) == 1 && as.character(barlist[[1]][[2]])[1] == "1")
     ## order terms by decreasing number of levels in the factor but don't
     ## change the order if this is already true:
     nlev <- sapply(rel, function(re) nlevels(re$f))

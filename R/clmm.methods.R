@@ -1,5 +1,5 @@
 #############################################################################
-##    Copyright (c) 2010-2020 Rune Haubo Bojesen Christensen
+##    Copyright (c) 2010-2022 Rune Haubo Bojesen Christensen
 ##
 ##    This file is part of the ordinal package for R (*ordinal*)
 ##
@@ -80,7 +80,7 @@ varcov <-
     if(format) noquote(formatVC(res, digits=digits)) else res
 }
 
-VarCorr <- function(x, ...) UseMethod("VarCorr")
+# VarCorr <- function(x, ...) UseMethod("VarCorr")
 VarCorr.clmm <- function(x, ...) varcov(x, ...)
 
 print.clmm <-
@@ -222,19 +222,6 @@ print.summary.clmm <-
   return(invisible(x))
 }
 
-## anova.clmm <- function(object, ...)
-##   anova.clm(object, ...)
-
-anova.clmm <- function(object, ...) {
-### This essentially calls anova.clm(object, ...), but the names of
-### the models were not displayed correctly in the printed output
-### unless the following dodge is enforced.
-  mc <- match.call()
-  arg.list <- as.list(mc)
-  arg.list[[1]] <- NULL
-  return(do.call(anova.clm, arg.list))
-}
-
 logLik.clmm <- function(object, ...)
   structure(object$logLik, df = object$edf, class = "logLik")
 
@@ -257,7 +244,7 @@ anova.clmm <- function(object, ...) {
   mc <- match.call()
   arg.list <- as.list(mc)
   arg.list[[1]] <- NULL
-  return(do.call(anova.clm, arg.list))
+  return(do.call(anova.clm, arg.list, envir = environment(formula(object))))
 }
 
 logLik.clmm <- function(object, ...)
@@ -268,3 +255,16 @@ extractAIC.clmm <- function(fit, scale = 0, k = 2, ...) {
   c(edf, -2*fit$logLik + k * edf)
 }
 
+model.matrix.clmm <- function(object, type = c("design", "B"), ...) {
+  type <- match.arg(type)
+  mf <- try(model.frame(object), silent=TRUE)
+  if(inherits(mf, "try-error"))
+    stop("Cannot extract model.matrix: refit model with 'model=TRUE'?")
+  if(type == "design") {
+    Terms <- terms(object)
+    ans <- model.matrix(Terms, mf)
+  } else { ## if type == "B":
+    stop("type = 'B' not yet implemented")
+  }
+  return(ans)
+}

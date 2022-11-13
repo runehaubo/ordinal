@@ -83,7 +83,7 @@ The package implements methods for profile likelihood confidence intervals, anal
 
 \begin{document}
 
-This is a copy of an article submitted for publication in Journal of
+This is a copy of an article that is no longer submitted for publication in Journal of
 Statistical Software (\url{https://www.jstatsoft.org/}).
 
 
@@ -438,7 +438,7 @@ is implemented in \pkg{ordinal} can be written
 %
 \begin{equation}
   \gamma_{ij} = F_{\lambda}(\eta_{ij}), \quad 
-  \eta_{ij} = \frac{g_{\bm\alpha} (\theta_i) - \bm x_i^\top \bm\beta - \bm w_i^\top \tilde{\bm\beta}_j}{\exp(\bm z_i\bm\zeta)}
+  \eta_{ij} = \frac{g_{\bm\alpha} (\theta_j) - \bm x_i^\top \bm\beta - \bm w_i^\top \tilde{\bm\beta}_j}{\exp(\bm z_i\bm\zeta)}
 \end{equation}
 %
 where 
@@ -447,7 +447,7 @@ where
    scalar parameter $\lambda$ in which case we refer to $F_{\lambda}^{-1}$ as a 
    \emph{flexible link function},
    %
-   \item[$g_{\bm\alpha}(\theta_i)$] parameterises thresholds $\{\theta_j\}$ by the 
+   \item[$g_{\bm\alpha}(\theta_j)$] parameterises thresholds $\{\theta_j\}$ by the 
    vector $\bm\alpha$ such that $g$ restricts $\{\theta_j\}$ to be for example 
    symmetric or equidistant. We denote this \emph{structured thresholds}.
    %

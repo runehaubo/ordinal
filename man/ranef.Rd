@@ -1,4 +1,4 @@
-\name{ranef}
+\name{condVar}
 \alias{ranef}
 \alias{condVar}
 \alias{ranef.clmm}
@@ -20,7 +20,6 @@
   latter into account.
 }
 \usage{
-ranef(object, ...)
 
 condVar(object, ...)
 

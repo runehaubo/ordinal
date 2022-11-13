@@ -1,5 +1,5 @@
 #############################################################################
-##    Copyright (c) 2010-2020 Rune Haubo Bojesen Christensen
+##    Copyright (c) 2010-2022 Rune Haubo Bojesen Christensen
 ##
 ##    This file is part of the ordinal package for R (*ordinal*)
 ##
@@ -254,7 +254,10 @@ anova.clm <- function(object, ..., type = c("I", "II", "III", "1", "2", "3"))
     message("'test' argument ignored in anova.clm\n")
     dots <- dots[-not.keep]
   }
-  if(length(dots) == 0) return(single_anova(object, type=type))
+  if(length(dots) == 0) {
+    if(inherits(object, "clmm")) stop("anova not implemented for a single clmm fit")
+    return(single_anova(object, type=type))
+  }
   ## Multi-model anova method proceeds:
   mlist <- c(list(object), dots)
   if(!all(sapply(mlist, function(model)

@@ -276,3 +276,17 @@ March 04 2010:
 2020-08-22:
 - Fix evaluation of long formulae in clmm - thanks to Stéphane Guillou, 
   Stefan Th. Gries and Tingting Zhan for reporting.
+  
+2022-11-13:
+- Fix function declaration without a prototype in utilityFuns.c per CRAN 
+  request.
+- Add model.matrix method for clmm-objects.
+- Enable evaluation of anova.clmm in separate environments - thanks to Karl Ove 
+  Hufthammer for reporting and Jack Taylor for a detailed analysis and 
+  suggestion for a fix.
+- Allow models with an implicit intercept and only random effects in clmm().
+- Fixed index in equation (7) of the clm-vignette.
+- Fix import of ranef and VarCorr methods from nlme and lme4 packages
+
+
+

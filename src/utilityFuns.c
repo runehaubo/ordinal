@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-//    Copyright (c) 2010-2018 Rune Haubo Bojesen Christensen
+//    Copyright (c) 2010-2022 Rune Haubo Bojesen Christensen
 //
 //    This file is part of the ordinal package for R (*ordinal*)
 //
@@ -26,21 +26,22 @@ int give_log = 0, lower_tail = 1;
 
 //---------------------------------
 
-double d_pfun();
-double d_pfun2(); // with lower_tail arg
-double d_dfun();
-double d_gfun();
-double d_gAO();
+double d_pfun(double, double, int); 
+double d_pfun2(double, double, int, int); // with lower_tail arg
+double d_dfun(double, double, int);  
+double d_gfun(double, double, int); 
 
 //--- negative log-likelihood:
 
-double d_nll();
+double d_nll(double *, int, int *, double, double *, double *, int, double *,
+             double *, double *, double *, double *, double *, double *,
+             double, int *);
 
 //--- Utilities:
 
-double mmax();
-double maxAbs();
-void Trace();
+double mmax(double *, int);
+double maxAbs(double *, int);
+void Trace(int, double, double, double, double *, int, int); 
 
 //---------------------------------
 
