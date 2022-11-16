@@ -242,10 +242,26 @@ anova.clmm <- function(object, ...) {
 ### the models were not displayed correctly in the printed output
 ### unless the following dodge is enforced.
   mc <- match.call()
-  arg.list <- as.list(mc)
-  arg.list[[1]] <- NULL
-  return(do.call(anova.clm, arg.list, envir = environment(formula(object))))
+  args <- as.list(mc)
+  Call <- as.call(c(list(quote(anova.clm)), args[-1]))
+  ff <- environment(formula(object))
+  pf <- parent.frame()  ## save parent frame in case we need it
+  sf <- sys.frames()[[1]]
+  ff2 <- environment(object)
+  res <- tryCatch(eval(Call, envir=pf),
+                  error=function(e) {
+                    tryCatch(eval(Call, envir=ff),
+                             error=function(e) {
+                               tryCatch(eval(Call, envir=ff2),
+                                        error=function(e) {
+                                          tryCatch(eval(Call, envir=sf),
+                                                   error=function(e) {
+                                                     "error" })})})})
+  if((is.character(res) && res == "error"))
+    stop("Unable to evaluate models.")
+  res
 }
+
 
 logLik.clmm <- function(object, ...)
   structure(object$logLik, df = object$edf, class = "logLik")

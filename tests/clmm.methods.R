@@ -9,6 +9,15 @@ stopifnot(inherits(mm, "matrix"),
           dim(mm) == c(72, 3))
 
 #################################
+## anova.clmm works even if formula does not have an environment:
+fmm1 <- clmm(rating ~ temp * contact + (1|judge), data = wine)
+fmm2 <- clmm(rating ~ temp + contact + (1|judge), data = wine)
+environment(fmm1$formula) <- NULL
+environment(fmm2$formula) <- NULL
+anova(fmm1, fmm2)
+
+
+#################################
 ## Test that ranef, condVar and VarCorr work as they are supposed to whether or
 ## not nlme and lme4 are loaded:
 
