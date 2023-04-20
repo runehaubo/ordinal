@@ -294,8 +294,8 @@ update.uC <- function(rho) {
   rho$Niter <- fit$Niter
   rho$fitted <- fit$fitted
   rho$u <- fit$u
-  rho$D <- fit$hessValue
-  rho$gradient <- fit$gradValue
+  rho$D <- fit$hessValues
+  rho$gradient <- fit$gradValues
   if(!is.finite(rho$negLogLik <- fit$funValue))
     return(FALSE)
   return(TRUE)

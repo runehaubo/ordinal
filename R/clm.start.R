@@ -28,7 +28,7 @@ set.start <-
     start <- ## not 'starting' scale effects:
         clm.start(y.levels=frames$y.levels, threshold=threshold, X=frames$X,
                   NOM=frames$NOM, has.intercept=TRUE)
-    if(NCOL(frames$S) > 1 || link == "cauchit" || length(rho$lambda)) {
+    if(NCOL(frames[["S"]]) > 1 || link == "cauchit" || length(rho$lambda)) {
 ### NOTE: only special start if NCOL(frames$S) > 1 (no reason for
 ### special start if scale is only offset and no predictors).
 ### NOTE: start cauchit models at the probit estimates if start is not
@@ -48,7 +48,7 @@ set.start <-
       if(inherits(fit, "try-error"))
         stop("Failed to find suitable starting values: please supply some",
              call.=FALSE)
-      start <- c(fit$par, rep(0, NCOL(frames$S) - 1))
+      start <- c(fit$par, rep(0, NCOL(frames[["S"]]) - 1))
       if(length(rho$lambda) > 0) start <- c(start, rho$lambda)
       attr(start, "start.iter") <- fit$niter
       rho$k <- tempk
@@ -57,7 +57,7 @@ set.start <-
   }
   ## test start:
   stopifnot(is.numeric(start))
-  length.start <- ncol(rho$B1) + NCOL(frames$S) + length(rho$lambda) - 1 
+  length.start <- ncol(rho$B1) + NCOL(frames[["S"]]) + length(rho$lambda) - 1 
   if(length(start) != length.start)
     stop(gettextf("length of start is %d should equal %d",
                   length(start), length.start), call.=FALSE)
