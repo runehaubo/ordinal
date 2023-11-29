@@ -97,7 +97,7 @@ getThetamat <-
 ### the NOM design matrix.
         keep <- apply(Theta, 1, function(x) sum(is.na(x)) == 0)
         ## Theta <- apply(Theta, 2, function(th) X %*% th)
-        tmp <- lapply(1:NCOL(Theta), function(i) {
+        tmp <- lapply(1:ncol(Theta), function(i) {
             X[, keep, drop=FALSE] %*% Theta[keep, i]
         })
         Theta <- do.call(cbind, tmp)

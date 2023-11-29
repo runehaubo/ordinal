@@ -11,6 +11,6 @@ NEWS.html
 \.so$
 \.dll$
 ^revdep$
-^revdep_archive$
+^revdep_archive
 ^misc$
 ^old_vignettes$

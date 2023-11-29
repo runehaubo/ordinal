@@ -106,7 +106,7 @@ clm.newRho <-
     B1 <- B1 %*% tJac
     B2 <- B2 %*% tJac
     ## update B1 and B2 with nominal effects:
-    if(NCOL(NOM) > 1) { ## !is.null(NOM) && ncol(NOM) > 1) {
+    if(!is.null(NOM) && ncol(NOM) > 1) {
       ## if !is.null(NOM) and NOM is more than an intercept:
       if(control$sign.nominal == "negative") NOM[, -1] <- -NOM[, -1]
       LL1 <- lapply(1:ncol(NOM), function(x) B1 * NOM[keep, x])
@@ -115,7 +115,7 @@ clm.newRho <-
       B2 <- do.call(cbind, LL2)
     }
     ## update B1 and B2 with location effects (X):
-    nbeta <- NCOL(X) - 1
+    nbeta <- ncol(X) - 1
     if(nbeta > 0) {
       if(control$sign.location == "negative") X <- -X
       B1 <- cbind(B1, X[keep, -1, drop = FALSE])

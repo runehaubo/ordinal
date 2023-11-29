@@ -24,12 +24,15 @@ set.start <-
   function(rho, start=NULL, get.start=TRUE, threshold, link, frames)
 {
   ## set starting values for the parameters:
+  nScol <- if(is.null(frames[["S"]])) 0 else ncol(frames[["S"]]) # no cols in S 
+  nSpar <- pmax(0, nScol - 1) # no Scale parameters
   if(get.start) {
     start <- ## not 'starting' scale effects:
         clm.start(y.levels=frames$y.levels, threshold=threshold, X=frames$X,
                   NOM=frames$NOM, has.intercept=TRUE)
-    if(NCOL(frames[["S"]]) > 1 || link == "cauchit" || length(rho$lambda)) {
-### NOTE: only special start if NCOL(frames$S) > 1 (no reason for
+    if(nSpar > 0 || # NCOL(frames[["S"]]) > 1 
+       link == "cauchit" || length(rho$lambda)) {
+### NOTE: only special start if nSpar > 0 (no reason for
 ### special start if scale is only offset and no predictors).
 ### NOTE: start cauchit models at the probit estimates if start is not
 ### supplied:
@@ -48,7 +51,7 @@ set.start <-
       if(inherits(fit, "try-error"))
         stop("Failed to find suitable starting values: please supply some",
              call.=FALSE)
-      start <- c(fit$par, rep(0, NCOL(frames[["S"]]) - 1))
+      start <- c(fit$par, rep(0, nSpar))
       if(length(rho$lambda) > 0) start <- c(start, rho$lambda)
       attr(start, "start.iter") <- fit$niter
       rho$k <- tempk
@@ -57,7 +60,7 @@ set.start <-
   }
   ## test start:
   stopifnot(is.numeric(start))
-  length.start <- ncol(rho$B1) + NCOL(frames[["S"]]) + length(rho$lambda) - 1 
+  length.start <- ncol(rho$B1) + nSpar + length(rho$lambda) 
   if(length(start) != length.start)
     stop(gettextf("length of start is %d should equal %d",
                   length(start), length.start), call.=FALSE)
@@ -109,7 +112,7 @@ meaningful for responses with 3 or more levels"))
 }
 
 start.beta <- function(X, has.intercept = TRUE)
-  return(rep(0, NCOL(X) - has.intercept))
+  return(rep(0, ncol(X) - has.intercept))
 
 ## clm.start <- function(y.levels, threshold, X, has.intercept = TRUE)
 ##   return(c(start.threshold(y.levels, threshold),
@@ -119,10 +122,10 @@ clm.start <- function(y.levels, threshold, X, NOM=NULL, S=NULL,
                        has.intercept=TRUE)
 {
   st <- start.threshold(y.levels, threshold)
-  if(!is.null(NOM) && NCOL(NOM) > 1)
+  if(!is.null(NOM) && ncol(NOM) > 1)
     st <- c(st, rep(rep(0, length(st)), ncol(NOM)-1))
   start <- c(st, start.beta(X, has.intercept))
-  if(!is.null(S) && NCOL(S) > 1)
+  if(!is.null(S) && ncol(S) > 1)
     start <- c(start, rep(0, ncol(S) - 1))
   start
 }

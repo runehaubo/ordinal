@@ -288,5 +288,7 @@ March 04 2010:
 - Fixed index in equation (7) of the clm-vignette.
 - Fix import of ranef and VarCorr methods from nlme and lme4 packages
 
-
+2023-11-29:
+- Change NCOL usage because Kurt Hornik wants to change the behavior of 
+  NCOL(NULL) in base R
 

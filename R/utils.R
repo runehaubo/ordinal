@@ -329,7 +329,7 @@ getB <- function(y, NOM=NULL, X=NULL, offset=NULL, tJac=NULL) {
     B2 <- B2 %*% tJac
   }
   ## update B1 and B2 with nominal effects:
-  if(NCOL(NOM) > 1) { ## !is.null(NOM) && ncol(NOM) > 1) {
+  if(!is.null(NOM) && ncol(NOM) > 1) {
     ## if !is.null(NOM) and NOM is more than an intercept:
     LL1 <- lapply(1:ncol(NOM), function(x) B1 * NOM[,x])
     B1 <- do.call(cbind, LL1)
@@ -337,8 +337,8 @@ getB <- function(y, NOM=NULL, X=NULL, offset=NULL, tJac=NULL) {
     B2 <- do.call(cbind, LL2)
   }
   ## update B1 and B2 with location effects (X):
-  nbeta <- NCOL(X) - 1
-  if(NCOL(X) > 1) {
+  nbeta <- ncol(X) - 1
+  if(ncol(X) > 1) {
     B1 <- cbind(B1, -X[, -1, drop = FALSE])
     B2 <- cbind(B2, -X[, -1, drop = FALSE])
   }
