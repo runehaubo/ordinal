@@ -105,11 +105,11 @@ clm.fit.default <- function(y, ...)
     }
     ## Fit the model:
     fit <- if(length(rho$lambda) > 0) {
-      clm.fit.flex(rho, control=y$control$ctrl) 
+      clm_fit_flex(rho, control=y$control$ctrl) 
     } else if(y$control$method == "Newton") {
-      clm.fit.NR(rho, y$control)
+      clm_fit_NR(rho, y$control)
     } else {
-      clm.fit.optim(rho, y$control$method, y$control$ctrl) 
+      clm_fit_optim(rho, y$control$method, y$control$ctrl) 
     }
     ## Adjust iteration count:
     if(y$control$method == "Newton" &&

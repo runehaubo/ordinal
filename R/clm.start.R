@@ -46,7 +46,7 @@ set.start <-
       tempk <- rho$k
       rho$k <- 0
       ## increased gradTol and relTol:
-      fit <- try(clm.fit.NR(rho, control=list(gradTol=1e-3, relTol=1e-3)),
+      fit <- try(clm_fit_NR(rho, control=list(gradTol=1e-3, relTol=1e-3)),
                  silent=TRUE)
       if(inherits(fit, "try-error"))
         stop("Failed to find suitable starting values: please supply some",

@@ -94,9 +94,9 @@ simple_clm <-
 
   ## Fit the clm:
   if(control$method == "Newton")
-    fit <- clm.fit.NR(rho, control)
+    fit <- clm_fit_NR(rho, control)
   else
-    fit <- clm.fit.optim(rho, control$method, control$ctrl)
+    fit <- clm_fit_optim(rho, control$method, control$ctrl)
 ### NOTE: we could add arg non.conv = c("error", "warn", "message") to
 ### allow non-converged fits to be returned.
 

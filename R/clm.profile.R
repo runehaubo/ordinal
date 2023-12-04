@@ -150,7 +150,7 @@ profile.clm.beta <-
                 new.off <- X[, 1+wb, drop=TRUE] * beta.i
                 rho$o1 <- orig$o1 - new.off
                 rho$o2 <- orig$o2 - new.off
-                fit <- clm.fit.NR(rho, control)
+                fit <- clm_fit_NR(rho, control)
                 ## save likelihood root statistic:
                 lroot <- -direction * sqrt(2*(fitted$logLik - fit$logLik))
                 ## save lroot and pararameter values:
@@ -247,7 +247,7 @@ profile.clm.zeta <-
         rho$Soff <- rho$sigma <- Soff * exp(S[, wz, drop=TRUE] * zeta.i)
 ### NOTE: Need to update sigma in addition to Soff since otherwise
 ### sigma isn't updated when k=0 (single scale par)
-        fit <- clm.fit.NR(rho, control)
+        fit <- clm_fit_NR(rho, control)
         ## save likelihood root statistic:
         lroot <- -direction * sqrt(2*(fitted$logLik - fit$logLik))
         ## save lroot and pararameter values:

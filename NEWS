@@ -288,7 +288,9 @@ March 04 2010:
 - Fixed index in equation (7) of the clm-vignette.
 - Fix import of ranef and VarCorr methods from nlme and lme4 packages
 
-2023-11-29:
+2023-12-04:
 - Change NCOL usage because Kurt Hornik wants to change the behavior of 
   NCOL(NULL) in base R
+- Names of functions clm.fit.NR, clm.fit.flex and clm.fit.optim changed to 
+  clm_fit_NR, clm_fit_flex and clm_fit_optim to avoid hiccup from CRAN checks. 
 

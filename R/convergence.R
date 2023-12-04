@@ -160,7 +160,7 @@ conv.check <-
     ##          tol=sqrt(.Machine$double.eps), ...)
 ### Compute variance-covariance matrix and check convergence along the
 ### way.
-### fit: clm-object or the result of clm.fit.NR() | gradient, Hessian,
+### fit: clm-object or the result of clm_fit_NR() | gradient, Hessian,
 ### (control), convergence
 ### control: (tol), (method), gradTol, relTol
 ###

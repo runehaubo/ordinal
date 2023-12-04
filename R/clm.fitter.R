@@ -18,12 +18,12 @@
 ##    <http://www.gnu.org/licenses/>.
 #############################################################################
 ## This file contains:
-## Functions to fit/estimate CLMs (clm.fit.NR, clm.fit.optim) and
+## Functions to fit/estimate CLMs (clm_fit_NR, clm_fit_optim) and
 ## functions implementing the negative log-likelihood, its gradient
 ## and hessian (.nll, .grad, .hess). These functions are rarely to be
 ## called directly from outside the package.
 
-clm.fit.NR <-
+clm_fit_NR <-
   function(rho, control = list())
 ### The main work horse: Where the actual fitting of the clm goes on.
 ### Fitting the clm via modified Newton-Raphson with step halving.
@@ -222,7 +222,7 @@ clm.fit.NR <-
 }
 
 
-clm.fit.optim <-
+clm_fit_optim <-
   function(rho, method = c("ucminf", "nlminb", "optim"), control=list())
 {
   method <- match.arg(method)
@@ -263,7 +263,7 @@ clm.fit.optim <-
   return(res)
 }
 
-clm.fit.flex <- function(rho, control=list()) {
+clm_fit_flex <- function(rho, control=list()) {
   lwr <- if(rho$link == "Aranda-Ordaz") 
     c(rep(-Inf, length(rho$par) - 1), 1e-5) else rep(-Inf, length(rho$par))
   ## optimize the likelihood:
