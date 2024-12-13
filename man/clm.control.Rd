@@ -56,7 +56,7 @@ clm.control(method = c("Newton", "model.frame", "design", "ucminf", "nlminb",
   \item{convergence}{action to take if the fitting algorithm did not
     converge.
   }
-  \item{\dots}{control arguments parsed on to \code{\link{ucminf}},
+  \item{\dots}{control arguments parsed on to \code{\link[ucminf]{ucminf}},
     \code{\link{nlminb}} or \code{\link{optim}}.
   }
 }

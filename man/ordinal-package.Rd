@@ -68,7 +68,7 @@ main features are:
     slopes (random coefficient models) are fitted with the Laplace
     approximation.}
   \item{Estimation employs sparse matrix methods from the
-    \code{\link{Matrix}} package. }
+    \code{\link[Matrix]{Matrix}} package. }
   \item{During model fitting a Newton-Raphson algorithm updates the
     conditional modes of the random effects a large number of times. The
     likelihood function is optimized with a general purpose optimizer.}

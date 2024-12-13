@@ -69,7 +69,7 @@ likelihood function is only defined up to an additive constant.
 \author{Rune Haubo B Christensen}
 \seealso{
   \code{\link[ordinal]{clm2}}, \code{\link[=anova.clm2]{anova}},
-  \code{\link{addterm.default}} and \code{\link{dropterm.default}}
+  \code{\link[MASS]{addterm.default}} and \code{\link[MASS]{dropterm.default}}
 }
 \examples{
 

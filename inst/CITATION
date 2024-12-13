@@ -5,7 +5,7 @@ bibentry(
   'Manual',
   title    = 'ordinal---Regression Models for Ordinal Data',
   author   = person("Rune H. B.", "Christensen",
-                    comment = c(ORCID = "000-0002-4494-3399")),
+                    comment = c(ORCID = "0000-0002-4494-3399")),
   header   = "To cite 'ordinal' in publications use:",
   year     = year,
   note     = vers,
