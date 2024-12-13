@@ -78,6 +78,17 @@ test_that("Intercept is needed and assumed", {
     ## and similar with scale (+nominal)
 })
 
+
+
+wine4 <- wine
+wine4 <- within(wine4, temp2 <- 1e4*as.integer(temp))
+
+test_that("convergence messsages are printed when there are >1 codes", {
+  expect_warning(
+    fm1 <- clm(rating ~ temp2 + contact, data=wine4)
+    , "very large eigenvalue")
+})
+
 ## test_that("", {
 ##
 ## })

@@ -288,7 +288,7 @@ print.conv.check <-
     function(x, action=c("warn", "silent", "stop", "message"), ...)
 {
     action <- match.arg(action)
-    if(x$code == 0L || action == "silent") return(invisible())
+    if(x$code[1L] == 0L || action == "silent") return(invisible())
 
     Text <- paste("(", x$code[1L], ") ", x$messages[1L], sep="")
     if(!is.null(alg.text <- x$alg.message))
