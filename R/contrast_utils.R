@@ -274,7 +274,7 @@ extract_contrasts_type3 <- function(model, X=NULL) {
   orthog_order <- term_names[order(terms_order, decreasing = TRUE)]
   # Only orthogonalize terms with columns in X:
   keep <- names(which(sapply(map[orthog_order], length) > 0))
-  for(term in orthog_order[keep]) {
+  for(term in keep) { # term <- keep[2]
     # if term is contained in other terms:
     if(length(contains <- is_contained[[term]]) > 0) {
       # orthogonalize cols in L for 'term' wrt. cols that contain 'term':
@@ -287,7 +287,7 @@ extract_contrasts_type3 <- function(model, X=NULL) {
   L <- L[colnames(X), , drop=FALSE]
   # Extract list of contrast matrices from L - one for each term:
   Llist <- lapply(map[term_names], function(term) t(L[, term, drop=FALSE]))
-  # Keep all non-zero rows:
+  # Keep and return all non-zero rows:
   lapply(Llist, function(L) L[rowSums(abs(L)) > 1e-8, , drop=FALSE])
 }
 
