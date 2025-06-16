@@ -294,3 +294,6 @@ March 04 2010:
 - Names of functions clm.fit.NR, clm.fit.flex and clm.fit.optim changed to 
   clm_fit_NR, clm_fit_flex and clm_fit_optim to avoid hiccup from CRAN checks. 
 
+2025-06-16:
+- Fix bug in type-3 anova tables for clm objects. Thanks to André Meichtry, 
+  Bern, Switzerland for reporting.
