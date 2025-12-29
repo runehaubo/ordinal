@@ -510,7 +510,7 @@ $\theta_j = (\theta_j^* - \alpha^*) / \sigma^*$ and
 $\bm\beta = \bm\beta^* / \sigma^*$. Note that $\alpha^*$, $\bm\beta^*$ and 
 $\sigma^*$ would 
 have been identifiable if the latent variable $S$ was directly observed, but they
-are not identifiable with ordinal observations.
+are not identifiable with ordinal observations. See Figure~\ref{fig:standard_clm} for an illustration.
 
 If we allow a log-linear model for the scale such that
 %
@@ -865,10 +865,99 @@ Three natural and complementing interpretations of this model are
 %
 Note that there are no $p$~values displayed for the threshold coefficients because it usually does not make sense to test the hypothesis that they equal zero. 
 
+\setkeys{Gin}{width=.45\textwidth}
 \begin{figure}
   \centering
-  \includegraphics[width=6cm]{./static_figs/fig-fig2} 
-  \caption{Illustration of the effect of temperature in the standard cumulative link model in Equation~\ref{eq:CLM} for the wine data in Table~\ref{tab:wineData} through a latent variable interpretation.\label{fig:standard_clm}}
+<<latent_dist_1, echo=FALSE, results=hide, fig=TRUE, include=TRUE, width=5, height=5>>=
+fm1_fig <- clm(rating ~ contact + temp, data=wine, link="probit")
+## Version with arbitrary location and scale parameterization:
+alpha_ast <- .6
+sigma_ast <- 1.4
+theta <- fm1_fig$alpha
+beta <- fm1_fig$beta[2]
+theta_ast <- theta * sigma_ast
+beta_ast <- beta * sigma_ast
+
+par(mar = c(3,0,0.5,0)+.2)
+Min <- -3; Max <- 5; H <- 1; loft <- 2
+xx <- seq(Min, Max, len=1e3)
+plot(c(Min, Max), c(0, loft), type = "n", axes=FALSE, xlab="", ylab="")
+axis(1, at=-alpha_ast + seq(-2, 5, 1), line=1,
+     labels = seq(-2, 5, 1))
+lines(xx, dnorm(xx, sd = sigma_ast))
+lines(xx, H+dnorm(xx, beta_ast, sd=sigma_ast))
+abline(h=c(0, H))
+text(Max-.3, .15, "cold")
+text(Max-.3, H+.15, "warm")
+## alpha:
+mtext(expression(paste(alpha, '*')), side=1, at=0)
+segments(0, -.02, 0, .02)
+## beta arrow:
+segments(0, dnorm(0, sd=sigma_ast), 0, dnorm(0, sd=sigma_ast)+H+.3, 
+         lty=3, lwd=2)
+segments(beta_ast, H+dnorm(0, sd=sigma_ast), beta_ast, 
+         dnorm(0, sd=sigma_ast)+H+.3, lty=3,
+         lwd=2)
+arrows(0, H+.3+dnorm(0, sd=sigma_ast), beta_ast, 
+       H+.3+dnorm(0, sd=sigma_ast), length=.1)
+text(beta_ast-.25, H+.3+dnorm(0, sd=sigma_ast)+.05, expression(paste(beta, '*')))
+## add thresholds and Y-scale:
+abline(h=loft)
+theta.text <- c(expression(paste(theta[1], '*')), 
+                expression(paste(theta[2], '*')),
+                expression(paste(theta[3], '*')),
+                expression(paste(theta[4], '*')))
+mtext(theta.text, at=theta_ast, side=1)
+segments(theta_ast, -2, theta_ast, 10, col="red")
+mtext(c("Y:", 1:5), side=3, line=-.5, at=c(-2.5, -1.5, theta_ast+.5),
+      col="red")
+text(-2, H/2, expression(paste("P(Y = 2|cold)")), col="red")
+arrows(-2, H/2-.04, -.2, .2, length=.1, col="red")
+@
+<<latent_dist_2, echo=FALSE, results=hide, fig=TRUE, include=TRUE, width=5, height=5>>=
+## Version of figure with standardized location and scale:
+alpha_ast <- 0
+sigma_ast <- 1
+theta <- fm1_fig$alpha
+beta <- fm1_fig$beta[2]
+theta_ast <- theta * sigma_ast
+beta_ast <- beta * sigma_ast
+
+par(mar = c(3,0,0.5,0)+.2)
+Min <- -3; Max <- 5; H <- 1; loft <- 2
+xx <- seq(Min, Max, len=1e3)
+plot(c(Min, Max), c(0, loft), type = "n", axes=FALSE, xlab="", ylab="")
+axis(1, at=-alpha_ast + seq(-2, 4, 1), line=1,
+     labels = seq(-2, 4, 1))
+lines(xx, dnorm(xx, sd = sigma_ast))
+lines(xx, H+dnorm(xx, beta_ast, sd=sigma_ast))
+abline(h=c(0, H))
+text(Max-.3, .15, "cold")
+text(Max-.3, H+.15, "warm")
+segments(0, -.02, 0, .02)
+## beta arrow:
+segments(0, dnorm(0, sd=sigma_ast), 0, dnorm(0, sd=sigma_ast)+H+.3, 
+         lty=3, lwd=2)
+segments(beta_ast, H+dnorm(0, sd=sigma_ast), beta_ast, 
+         dnorm(0, sd=sigma_ast)+H+.3, lty=3,
+         lwd=2)
+arrows(0, H+.3+dnorm(0, sd=sigma_ast), beta_ast, 
+       H+.3+dnorm(0, sd=sigma_ast), length=.1)
+text(beta_ast-.25, H+.3+dnorm(0, sd=sigma_ast)+.05, expression(paste(beta)))
+## add thresholds and Y-scale:
+abline(h=loft)
+theta.text <- c(expression(paste(theta[1])), 
+                expression(paste(theta[2])),
+                expression(paste(theta[3])),
+                expression(paste(theta[4])))
+mtext(theta.text, at=theta_ast, side=1)
+segments(theta_ast, -2, theta_ast, 10, col="red")
+mtext(c("Y:", 1:5), side=3, line=-.5, at=c(-2.5, -1.5, theta_ast+.5),
+      col="red")
+text(-2, H/2, expression(paste("P(Y = 2|cold)")), col="red")
+arrows(-2, H/2-.04, -.2, .2, length=.1, col="red")
+@
+  \caption{Illustration of the effect of temperature in the standard cumulative link model in Equation~\ref{eq:CLM} for the wine data in Table~\ref{tab:wineData} through a latent variable interpretation. Left: Arbitrary location ($\alpha^*$) and scale ($\sigma^*$) and right: Standardized parameters.\label{fig:standard_clm}}
 \end{figure}
 
 The number of Newton-Raphson iterations is given below \code{niter}
@@ -967,9 +1056,43 @@ Again $\{ \theta_j \}$ refer to the thresholds at $\mathtt{temp}_i = \mathtt{col
 The odds ratio of bitterness being rated in category $j$ or above ($\mathrm{OR}(Y \geq j)$) now depend on $j$: $\{\exp(-\hat{\tilde{\beta}}_j(\mathtt{yes} - \mathtt{no}))\} = \{ 5.03,~ 4.53,~ 5.34,~ 2.86\}$.
 % 
 
+\setkeys{Gin}{width=.45\textwidth}
 \begin{figure}
   \centering
-  \includegraphics[width=6cm]{./static_figs/fig-figNom2} 
+<<figNom2, echo=FALSE, results=hide, fig=TRUE, include=TRUE, width=5, height=5>>=
+fm_fig.nom <- clm(rating ~ temp, nominal =~ contact, data=wine,
+              link="probit")
+th1 <- unlist(fm_fig.nom$Theta[1, 2:5]) # thresholds for contact: "no"
+th2 <- unlist(fm_fig.nom$Theta[2, 2:5]) # thresholds for contact: "yes"
+
+## Figure:
+par(mar = c(2,0,1,0)+.2)
+Min <- -3; Max <- 5; H <- 1; loft <- 2
+xx <- seq(Min, Max, len=1e3)
+plot(c(Min, Max), c(0, loft), type = "n", axes=FALSE, xlab="", ylab="")
+lines(xx, dnorm(xx))
+lines(xx, H+dnorm(xx, fm_fig.nom$beta[1]))
+abline(h=c(0, H))
+text(Max-.3, .15, "cold")
+text(Max-.3, H+.15, "warm")
+segments(0, -.02, 0, .02)
+## beta arrow:
+segments(0, dnorm(0), 0, dnorm(0)+H+.3, lty=3, lwd=2)
+segments(fm_fig.nom$beta[1], H+dnorm(0), fm_fig.nom$beta[1], dnorm(0)+H+.3,
+         lty=3, lwd=2)
+arrows(0, H+.3+dnorm(0), fm_fig.nom$beta[1], H+.3+dnorm(0), length=.1)
+text(fm_fig.nom$beta[1]-.2, loft-.22, expression(beta))
+abline(h=loft)
+theta.text <- c(expression(theta[1]), expression(theta[2]),
+                expression(theta[3]), expression(theta[4]))
+mtext(theta.text, at=th1, side=1, col="red")
+segments(th1, -.05, th1, loft, col="red")
+mtext("contact: no", at=4.3, side=1, col="red")
+
+mtext(theta.text, at=th2, side=3, col="blue")
+segments(th2, 0, th2, loft+.05, col="blue")
+mtext("contact: yes", at=4.3, side=3, col="blue")
+@
   \caption{Illustration of nominal effects leading to different sets of thresholds being applied for each level of \code{contact} in a latent variable interpretation, cf., Equation~\ref{eq:CLM_nominal}.\label{fig:clm_nominal}}
 \end{figure}
 
@@ -1040,9 +1163,43 @@ scale_test(fm1)
 \code{drop1}, \code{add1} and \code{step} methods will only drop
 or add terms to the (location) \code{formula}.
 
+\setkeys{Gin}{width=.45\textwidth}
 \begin{figure}
   \centering
-  \includegraphics[width=6cm]{./static_figs/fig-figSca} 
+<<figSca, echo=FALSE, results=hide, fig=TRUE, include=TRUE, width=5, height=5>>=
+## Scale differences:
+fm_fig.sca <- clm(rating ~ contact + temp, scale=~temp,
+              data=wine, link="probit")
+## Exagerate the scale for better visual:
+sca <- 1.5 # exp(fm_fig.sca$zeta)
+
+## Figure:
+par(mar = c(2,0,1,0)+.2)
+Min <- -3; Max <- 5; H <- 1; loft <- 2
+xx <- seq(Min, Max, len=1e3)
+plot(c(Min, Max), c(0, loft), type = "n", axes=FALSE, xlab="", ylab="")
+lines(xx, dnorm(xx))
+lines(xx, H+dnorm(xx, fm_fig.sca$beta[2], sca))
+abline(h=c(0, H))
+text(Max-.3, .15, "cold")
+text(Max-.3, H+.15, "warm")
+## alpha:
+## mtext(expression(alpha), side=1, at=0)
+segments(0, -.02, 0, .02)
+## beta arrow:
+segments(0, dnorm(0), 0, dnorm(0, ,sca)+H+.3, lty=3, lwd=2)
+segments(fm_fig.sca$beta[2], H+dnorm(0, ,sca), fm_fig.sca$beta[2],
+         dnorm(0, ,sca)+H+.3, lty=3, lwd=2)
+arrows(0, H+.3+dnorm(0, ,sca), fm_fig.sca$beta[2], H+.3+dnorm(0, ,sca), length=.1)
+text(fm_fig.sca$beta[2]-.2, loft-.35, expression(beta))
+abline(h=loft)
+theta.text <- c(expression(theta[1]), expression(theta[2]),
+                expression(theta[3]), expression(theta[4]))
+mtext(theta.text, at=fm_fig.sca$alpha, side=1)
+segments(fm_fig.sca$alpha, -2, fm_fig.sca$alpha, 10, col="red")
+mtext(c("Y:", 1:5), side=3, line=-.5, at=c(-2.5, -1.5, fm_fig.sca$alpha+.5),
+      col="red")
+@ 
   \caption{Illustration of scale effects leading to different scales of the latent variable, cf., Equation~\ref{eq:CLM_scale_wine}.\label{fig:clm_scale}}
 \end{figure}
 
@@ -1090,10 +1247,82 @@ the model with equally spaced thresholds.
 
 Note that the shape of the latent distribution (determined by the choice of link function) also affects the distances between the thresholds. If thresholds are equidistant under a normal distribution (i.e., with the logit link) they will in general\footnote{The exception is perfect fits such as CLMs with flexible thresholds and no predictors where models have the same likelihood irrespective of link function.} not be equidistant under a differently shaped latent distribution such as a skew latent distribution (e.g., with the log-log or clog-log link). 
 
+\setkeys{Gin}{width=.45\textwidth}
 \begin{figure}
   \centering
-  \includegraphics[width=6cm]{./static_figs/fig-figFlex} 
-  \includegraphics[width=6cm]{./static_figs/fig-figEqui} 
+<<figFlex, echo=FALSE, results=hide, fig=TRUE, include=TRUE, width=5, height=5>>=
+fm_fig.flex <- clm(rating ~ contact + temp, data=wine,
+               link="probit")
+th <- fm_fig.flex$alpha
+par(mar = c(2,0,0.5,0)+.2)
+Min <- -3; Max <- 5; H <- 1; loft <- 2
+xx <- seq(Min, Max, len=1e3)
+plot(c(Min, Max), c(0, loft), type = "n", axes=FALSE, xlab="", ylab="")
+lines(xx, dnorm(xx))
+lines(xx, H+dnorm(xx, fm_fig.flex$beta[2]))
+abline(h=c(0, H))
+text(Max-.3, .15, "cold")
+text(Max-.3, H+.15, "warm")
+## alpha:
+# mtext(expression(alpha), side=1, at=0)
+segments(0, -.02, 0, .02)
+## beta arrow:
+segments(0, dnorm(0), 0, dnorm(0)+H+.3, lty=3, lwd=2)
+segments(fm_fig.flex$beta[2], H+dnorm(0), fm_fig.flex$beta[2], dnorm(0)+H+.3,
+         lty=3, lwd=2)
+arrows(0, H+.3+dnorm(0), fm_fig.flex$beta[2], H+.3+dnorm(0), length=.1)
+text(fm_fig.flex$beta[2]-.2, loft-.22, expression(beta))
+## add thresholds and Y-scale:
+abline(h=loft)
+theta.text <- c(expression(theta[1]), expression(theta[2]),
+                expression(theta[3]), expression(theta[4]))
+mtext(theta.text, at=th, side=1)
+segments(th, -2, th, 10, col="red")
+mtext(c("Y:", 1:5), side=3, line=-.5, at=c(-2.5, -1.5,
+               th+.6),  col="red")
+text(-2, H/2, expression(paste("P(Y = 2|cold)")), col="red")
+arrows(-2, H/2-.04, -.2, .2, length=.1, col="red")
+arrows(th[-4], loft-.05, th[-1], loft-.05, length=.1)
+text(th[-4]+.6, loft-.1, c(expression(Delta[1]), expression(Delta[2]),
+                           expression(Delta[3])))
+@
+<<figEqui, echo=FALSE, results=hide, fig=TRUE, include=TRUE, width=5, height=5>>=
+fm_fig.equi <- clm(rating ~ contact + temp, data=wine,
+               threshold="equidistant", link="probit")
+th <- c(fm_fig.equi$alpha[1], fm_fig.equi$alpha[1] +
+        cumsum(rep(fm_fig.equi$alpha[2], 3)))
+par(mar = c(2,0,0.5,0)+.2)
+Min <- -3; Max <- 5; H <- 1; loft <- 2
+xx <- seq(Min, Max, len=1e3)
+plot(c(Min, Max), c(0, loft), type = "n", axes=FALSE, xlab="", ylab="")
+lines(xx, dnorm(xx))
+lines(xx, H+dnorm(xx, fm_fig.equi$beta[2]))
+abline(h=c(0, H))
+text(Max-.3, .15, "cold")
+text(Max-.3, H+.15, "warm")
+## alpha:
+## mtext(expression(alpha), side=1, at=0)
+segments(0, -.02, 0, .02)
+## beta arrow:
+segments(0, dnorm(0), 0, dnorm(0)+H+.3, lty=3, lwd=2)
+segments(fm_fig.equi$beta[2], H+dnorm(0), fm_fig.equi$beta[2], dnorm(0)+H+.3,
+         lty=3, lwd=2)
+arrows(0, H+.3+dnorm(0), fm_fig.equi$beta[2], H+.3+dnorm(0), length=.1)
+text(fm_fig.equi$beta[2]-.2, loft-.22, expression(beta))
+## add thresholds and Y-scale:
+abline(h=loft)
+theta.text <- c(expression(theta[1]), expression(theta[2]),
+                expression(theta[3]), expression(theta[4]))
+mtext(theta.text, at=th, side=1)
+segments(th, -2, th, 10, col="red")
+mtext(c("Y:", 1:5), side=3, line=-.5, at=c(-2.5, -1.5,
+               th+.6),  col="red")
+text(-2, H/2, expression(paste("P(Y = 2|cold)")), col="red")
+arrows(-2, H/2-.04, -.2, .2, length=.1, col="red")
+arrows(th[-4], loft-.05, th[-1], loft-.05, length=.1)
+text(th[-4]+.6, loft-.1, c(expression(Delta), expression(Delta),
+                           expression(Delta)))
+@
   \caption{Illustration of flexible (left) and equidistant (right) thresholds being applied in a cumulative link model in a latent variable interpretation.\label{fig:clm_structured_thresholds}}
 \end{figure}
 

@@ -297,3 +297,11 @@ March 04 2010:
 2025-06-16:
 - Fix bug in type-3 anova tables for clm objects. Thanks to André Meichtry, 
   Bern, Switzerland for reporting.
+
+2025-12-29:
+- Clarifying the distinction between the unidentifiable parameters and the 
+  standardized parameters on the latent scale in Figure 1 in the clm-vignette
+  following discussion with Michael Mühlbauer. Also removing static figures and 
+  now generate them directly in the Rnw file.
+
+
