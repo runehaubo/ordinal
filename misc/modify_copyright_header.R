@@ -6,12 +6,7 @@ cp_header <- readLines("~/GitHub/ordinal/ordinal/misc/copyright_header.txt")
 cp_src_header <- gsub("#", "/", cp_header)
 
 folder <- "~/GitHub/ordinal/ordinal/R"
-# folder <- "~/GitHub/ordinal/ordinal/src"
 filenames <- list.files(folder)
-# Get *.c and *.h files from /src:
-# keep <- sapply(strsplit(filenames, ".", fixed = TRUE), 
-#                function(s) s[2] %in% c("c", "h"))
-# filenames <- filenames[keep]
 
 # fn <- filenames[1] # for tests
 for(fn in filenames) {
@@ -43,8 +38,8 @@ for(fn in filenames) { # fn <- filenames[1] # for tests
   filepath <- paste(folder, fn, sep="/")
   txt <- readLines(filepath)
   # Get index of copyright header first and last line:
-  ind <- grep("^########################################", txt)
-  # ind <- grep("^/////////////////////////////////////////", txt)
+  # ind <- grep("^########################################", txt)
+  ind <- grep("^/////////////////////////////////////////", txt)
   # Check if copyright header exists in file:
   if(grepl("Copyright (c)", txt[ind[1]+1], fixed=TRUE)) {
     txt <- txt[-seq_len(ind[2])] # remove copyright header
