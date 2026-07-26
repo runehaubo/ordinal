@@ -38,7 +38,7 @@ csm1 <- structure(c(-1.49125702755587, -0.45218462707814, -0.107208315524318,
 -6.2957256316336, -1.53255261729392, 2.32532927691394, 11.0959385851501,
 10.8867632762999, 2.27306584421104, 6.66732036748908e-59, 3.05965144996025e-10,
 0.125386123756898, 0.0200543599621069, 1.31274723412040e-28,
-1.33293711602276e-27, 0.0230222123418036), .Dim = c(7L, 4L), .Dimnames = list(
+1.33293711602276e-27, 0.0230222123418036), dim = c(7L, 4L), dimnames = list(
     c("1|2", "2|3", "3|4", "4|5", "5|6", "prodTest", "prodTest"
     ), c("Estimate", "Std. Error", "z value", "Pr(>|z|)")))
 stopifnot(all.equal(coef(summary(m1)), csm1))
@@ -223,7 +223,7 @@ stopifnot(isTRUE(all.equal(sum(freq*log(freq/totals)), modClm$logLik)))
 coef(modClm)
 coef.res <- structure(c(-2.48490664104217, 2.48490665578163,
                         2.48490659188594,
-                        3.54758796387530), .Names = c("1|2", "2|3",
+                        3.54758796387530), names = c("1|2", "2|3",
                                              "x", "x"))
 stopifnot(isTRUE(all.equal(coef.res, coef(modClm))))
 # > modClm$coefficients

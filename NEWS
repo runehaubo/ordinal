@@ -304,4 +304,8 @@ March 04 2010:
   following discussion with Michael Mühlbauer. Also removing static figures and 
   now generate them directly in the Rnw file.
 
+2026-07-26:
+- Fixing missing reference from clm_article.Rnw
+- Fixing `structure(..., .Dim, .Dimnames, .Names)` to 
+  `structure(..., dim, dimnames, names)`
 
