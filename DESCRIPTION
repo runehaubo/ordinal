@@ -4,7 +4,8 @@ Title: Regression Models for Ordinal Data
 Version: 2026.7-26
 Date: 2026-07-26
 Authors@R: person(given="Rune Haubo Bojesen", family="Christensen",
-    email="rune.haubo@gmail.com", role=c("aut", "cre"))
+    email="rune.haubo@gmail.com", role=c("aut", "cre"), 
+    comment = c(ORCID = "0000-0002-4494-3399"))
 LazyData: true
 ByteCompile: yes
 Depends: R (>= 2.13.0), stats, methods
