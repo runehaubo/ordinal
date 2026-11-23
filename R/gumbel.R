@@ -54,9 +54,8 @@ pgumbelR <- function(q, location = 0, scale = 1, lower.tail = TRUE)
 
 pgumbel2R <- function(q, location = 0, scale = 1, lower.tail = TRUE)
 {
-    q <- (-q - location)/scale
-    p <- exp(-exp(-q))
-    if (!lower.tail) p else 1 - p
+    q <- exp((q - location)/scale)
+    if (lower.tail) -expm1(-q) else exp(-q)
 }
 
 dgumbel <-
@@ -91,9 +90,7 @@ dgumbelR <- function(x, location = 0, scale = 1, log = FALSE)
 
 dgumbel2R <- function(x, location = 0, scale = 1, log = FALSE)
 {
-    q <- (-x - location)/scale
-    log.d <- -exp(-q) - q - log(scale)
-    if (!log) exp(log.d) else log.d
+    dgumbelR(-x, -location, scale, log)
 }
 
 ggumbel <- function(x, max = TRUE) {
