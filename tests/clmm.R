@@ -35,3 +35,17 @@ fm2 <- clmm(rating ~ (1|judge), data = wine)
 fm3 <- clmm(rating ~ 0 + (1|judge), data = wine)
 stopifnot(isTRUE(all.equal(coef(fm1), coef(fm2), tolerance=1e-5)),
           isTRUE(all.equal(coef(fm1), coef(fm3), tolerance=1e-5)))
+
+## Both fitting paths must use the requested asymmetric link (issue #76):
+for (link in c("cloglog", "loglog")) {
+    fit <- clmm(rating ~ temp + contact + (1|judge), data=wine, link=link)
+    fit.matrix <- clmm(rating ~ temp + contact + (1|judge),
+                       data=wine, link=link,
+                       control=clmm.control(useMatrix=TRUE))
+    fit.legacy <- clmm2(rating ~ temp + contact, random=judge,
+                        data=wine, link=link)
+    expected <- as.numeric(logLik(fit.matrix))
+    stopifnot(abs(as.numeric(logLik(fit)) - expected) < 1e-3,
+              abs(as.numeric(logLik(fit.legacy)) - expected) < 1e-3,
+              isTRUE(all.equal(coef(fit), coef(fit.matrix), tolerance=1e-4)))
+}

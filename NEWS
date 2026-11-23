@@ -309,3 +309,8 @@ March 04 2010:
 - Fixing `structure(..., .Dim, .Dimnames, .Names)` to 
   `structure(..., dim, dimnames, names)`
 
+Development:
+- Fix the interchanged cloglog and loglog links in the single-random-intercept
+  path of clmm() and the native path of clmm2() (#76). Refit affected models to
+  use the named link.
+
