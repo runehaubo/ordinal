@@ -44,19 +44,15 @@ double d_pgumbel(double q, double loc, double scale, int lower_tail)
 }
 
 double d_pgumbel2(double q, double loc, double scale, int lower_tail)
-// this is (partly) redundant since d_pgumbel2(q) = 1 - d_pgumbel(-q)
 {
   if(ISNAN(q)) // true for NA and NaN
     return NA_REAL;
-  if(q == R_PosInf) 
-    q = 1;
+  if(q == R_PosInf)
+    return lower_tail ? 1. : 0.;
   else if(q == R_NegInf)
-    q = 0;
-  else {
-    q = (-q - loc) / scale;
-    q = exp(-exp(-q));
-  }
-  return !lower_tail ? q : 1 - q;
+    return lower_tail ? 0. : 1.;
+  q = exp((q - loc) / scale);
+  return lower_tail ? -expm1(-q) : exp(-q);
 }
 
 double d_pAO(double q, double lambda, int lower_tail)
@@ -118,13 +114,7 @@ double d_dgumbel(double x, double loc, double scale, int give_log)
 
 double d_dgumbel2(double x, double loc, double scale, int give_log)
 {
-  if(ISNAN(x)) // true for NA and NaN
-    return NA_REAL;
-  if(x == R_PosInf || x == R_NegInf)
-    return 0;
-  x = (-x - loc) / scale;
-  x = -exp(-x) - x - log(scale);
-  return give_log ? x : exp(x);
+  return d_dgumbel(-x, -loc, scale, give_log);
 }
 
 double d_dAO(double eta, double lambda, int give_log)

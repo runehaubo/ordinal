@@ -63,7 +63,7 @@ void pgumbel2_C(double *q, int *nq, double *loc, double *scale,
 {
     int i;
     for(i = 0; i < *nq; i++)
-	q[i] = 1 - d_pgumbel(-q[i], *loc, *scale, *lower_tail);
+	q[i] = d_pgumbel2(q[i], *loc, *scale, *lower_tail);
 }
 
 void pAO_C(double *q, int *nq, double *lambda, int *lower_tail)
