@@ -190,9 +190,9 @@ double d_pfun(double x, double lambda, int link)
     case 2: // probit
 	return pnorm(x, mu, sigma, lower_tail, give_log);
     case 3: // cloglog
-	return d_pgumbel(x, mu, sigma, lower_tail);
-    case 4: // loglog
 	return d_pgumbel2(x, mu, sigma, lower_tail);
+    case 4: // loglog
+	return d_pgumbel(x, mu, sigma, lower_tail);
     case 5: // cauchit
 	return pcauchy(x, mu, sigma, lower_tail, give_log);
     case 6: // Aranda-Ordaz
@@ -219,9 +219,9 @@ double d_pfun2(double x, double lambda, int link, int lower_tail)
     case 2: // probit
 	return pnorm(x, mu, sigma, lower_tail, give_log);
     case 3: // cloglog
-	return d_pgumbel(x, mu, sigma, lower_tail);
-    case 4: // loglog
 	return d_pgumbel2(x, mu, sigma, lower_tail);
+    case 4: // loglog
+	return d_pgumbel(x, mu, sigma, lower_tail);
     case 5: // cauchit
 	return pcauchy(x, mu, sigma, lower_tail, give_log);
     case 6: // Aranda-Ordaz
@@ -254,9 +254,9 @@ double d_dfun(double x, double lambda, int link)
     case 2: // probit
 	return dnorm(x, mu, sigma, give_log);
     case 3: // cloglog
-	return d_dgumbel(x, mu, sigma, give_log);
-    case 4: // loglog
 	return d_dgumbel2(x, mu, sigma, give_log);
+    case 4: // loglog
+	return d_dgumbel(x, mu, sigma, give_log);
     case 5: // cauchit
 	return dcauchy(x, mu, sigma, give_log);
     case 6:
@@ -284,9 +284,9 @@ double d_gfun(double x, double lambda, int link)
     case 2: // probit
 	return d_gnorm(x);
     case 3: // cloglog
-	return d_ggumbel(x);
-    case 4: // loglog
 	return d_ggumbel2(x);
+    case 4: // loglog
+	return d_ggumbel(x);
     case 5: // cauchit
 	return d_gcauchy(x);
     case 6:
