@@ -32,4 +32,4 @@ expect_error(
 expect_error(
   fmm2 <- clmm(rating ~ temp + contact + (1|judge) + (1|fakeToo), data=wine,
                checkRanef="error")
-  , "no. random effects")
+  , "no. random effects.*term: \\(1 \\| fakeToo\\)")

@@ -253,11 +253,14 @@ getREterms <- function(frames, formula) {
 ###
     ## single simple random effect on the intercept?
     ssr <- (length(barlist) == 1 && as.character(barlist[[1]][[2]])[1] == "1")
-    ## order terms by decreasing number of levels in the factor but don't
-    ## change the order if this is already true:
+    ## Keep the random-effect terms, level counts and labels in the same order.
     nlev <- sapply(rel, function(re) nlevels(re$f))
-    if (any(diff(nlev)) > 0) rel <- rel[rev(order(nlev))]
-    nlev <- nlev[rev(order(nlev))]
+    if (any(diff(nlev) != 0L)) {
+        ord <- rev(order(nlev))
+        rel <- rel[ord]
+        nlev <- nlev[ord]
+        term.names <- term.names[ord]
+    }
     ## separate r.e. terms from the factor list:
     retrms <- lapply(rel, "[", -1)
     names(retrms) <- term.names
