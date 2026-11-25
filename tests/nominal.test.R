@@ -29,6 +29,57 @@ fm2 <- clm(rating ~ temp * contact, data=wine, scale=~contact)
 (sc <- scale_test(fm1))
 stopifnot(isTRUE(all.equal(an[2, 6], sc["contact", "Pr(>Chi)"])))
 
+## Refit a model whose formula, data, weights and subset are local.
+local_clm <- function(local_data, response, predictors, local_wt, local_subset) {
+    fm <- ordinal::clm(reformulate(predictors, response), data=local_data,
+                       weights=local_wt, subset=local_subset, model=FALSE)
+    list(fit=fm, nominal=nominal_test(fm), scale=scale_test(fm))
+}
+ref_wt <- rep(1:3, length.out=nrow(wine))
+ref_subset <- seq_len(nrow(wine)) %% 7L != 0L
+ref <- clm(rating ~ temp + contact, data=wine,
+           weights=ref_wt, subset=ref_subset, model=FALSE)
+expected_nominal <- nominal_test(ref)
+expected_scale <- scale_test(ref)
+stopifnot(all(is.finite(expected_nominal[-1L, "LRT"])),
+          all(is.finite(expected_scale[-1L, "LRT"])))
+
+local_result <- local_clm(wine, "rating", c("temp", "contact"),
+                          ref_wt, ref_subset)
+stopifnot(isTRUE(all.equal(local_result$nominal, expected_nominal)),
+          isTRUE(all.equal(local_result$scale, expected_scale)))
+
+restored <- unserialize(serialize(local_result$fit, NULL))
+stopifnot(isTRUE(all.equal(nominal_test(restored), expected_nominal)),
+          isTRUE(all.equal(scale_test(restored), expected_scale)))
+
+attr(restored, "call.envir") <- NULL
+stopifnot(isTRUE(all.equal(nominal_test(restored), expected_nominal)),
+          isTRUE(all.equal(scale_test(restored), expected_scale)))
+
+## Recover the fitting environment even when the formula came from elsewhere.
+fit_formula <- rating ~ temp + contact
+local_prebuilt <- function(dataset, formula) {
+    ordinal::clm(formula, data=dataset, weights=ref_wt,
+                 subset=ref_subset, model=FALSE)
+}
+prebuilt <- local_prebuilt(wine, fit_formula)
+prebuilt <- unserialize(serialize(prebuilt, NULL))
+stopifnot(isTRUE(all.equal(nominal_test(prebuilt), expected_nominal)),
+          isTRUE(all.equal(scale_test(prebuilt), expected_scale)))
+
+## A same-sized data set with the same name must not replace the fit's data.
+set.seed(5)
+dataset <- transform(wine, rating=sample(rating))
+fit_collision <- function(dataset) {
+    ordinal::clm(reformulate(c("temp", "contact"), "rating"),
+                 data=dataset, model=FALSE)
+}
+ref <- clm(rating ~ temp + contact, data=wine, model=FALSE)
+collision <- fit_collision(wine)
+stopifnot(isTRUE(all.equal(nominal_test(collision), nominal_test(ref))),
+          isTRUE(all.equal(scale_test(collision), scale_test(ref))))
+
 fm1 <- clm(rating ~ temp + contact,
            nominal=~temp + contact, data=wine)
 fm1

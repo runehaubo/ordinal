@@ -80,6 +80,7 @@ clm <-
     res$info=get_clmInfoTab(res)
     if(model) res$model <- fullmf
     res <- res[sort(names(res))]
+    attr(res, "call.envir") <- call.envir
     class(res) <- "clm"
     res
 }
