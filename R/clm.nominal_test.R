@@ -77,8 +77,8 @@ nominal_test.clm <-
             utils::flush.console()
         }
         ## update and fit model with nominal effect added:
-        nfit <- try(update(object, nominal=nomforms[[i]],
-                           convergence="silent"), silent=TRUE)
+        nfit <- try(refit_clm_test(object, env, nominal=nomforms[[i]],
+                                  convergence="silent"), silent=TRUE)
         ## model may not be identifiable or converge:
         if(!inherits(nfit, "try-error") &&
 ### NOTE: non-negative convergence codes indicate that the likelihood
@@ -163,7 +163,8 @@ scale_test.clm <-
           utils::flush.console()
       }
       ## update and fit model with scale effect added:
-      nfit <- try(update(object, scale=scaleforms[[i]]), silent=TRUE)
+      nfit <- try(refit_clm_test(object, env, scale=scaleforms[[i]]),
+                  silent=TRUE)
       ## model may not be identifiable or converge:
       if(!inherits(nfit, "try-error") &&
          nfit$convergence$code >= 0) {
@@ -195,5 +196,28 @@ scale_test.clm <-
   class(aod) <- c("anova", "data.frame")
   attr(aod, "heading") <- head
   aod
+}
+
+refit_clm_test <- function(object, formula.envir, ...) {
+    caller <- parent.frame()
+    call <- do.call(update, list(object, ..., evaluate=FALSE),
+                    quote=TRUE, envir=caller)
+    if(!is.call(call)) return(call)
+
+    call.envir <- attr(object, "call.envir", exact=TRUE)
+    if(is.environment(call.envir)) {
+        ## An unqualified clm call can outlive the attached package.
+        if(identical(call[[1L]], quote(clm)) &&
+           !exists("clm", envir=call.envir, mode="function"))
+            call[[1L]] <- quote(ordinal::clm)
+        return(eval(call, envir=call.envir))
+    }
+
+    ## Older fits only retain the formula environment.
+    fit <- try(eval(call, envir=caller), silent=TRUE)
+    if(inherits(fit, "try-error") && is.environment(formula.envir) &&
+       !identical(formula.envir, globalenv()))
+        return(eval(call, envir=formula.envir))
+    fit
 }
 
